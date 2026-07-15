@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">SaxHands</title>
+  <rect width="512" height="512" rx="104" fill="#f4efdf"/>
+  <circle cx="256" cy="256" r="192" fill="#fffaf0" stroke="#9b752d" stroke-width="18"/>
+  <circle cx="256" cy="256" r="160" fill="#eadcab" opacity=".48"/>
+  <text x="244" y="351" fill="#243229" font-family="Georgia, 'Times New Roman', serif" font-size="282" font-weight="700" text-anchor="middle">S</text>
+  <path d="M320 122c38 40 44 91 19 133-15 24-17 49-6 72" fill="none" stroke="#9b752d" stroke-linecap="round" stroke-width="18"/>
+  <circle cx="343" cy="349" r="34" fill="#fffaf0" stroke="#174f51" stroke-width="15"/>
+  <circle cx="343" cy="349" r="11" fill="#174f51"/>
+</svg>

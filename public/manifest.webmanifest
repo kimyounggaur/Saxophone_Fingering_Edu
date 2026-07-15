@@ -1,0 +1,26 @@
+{
+  "name": "SaxHands — 색소폰 운지법 배우기",
+  "short_name": "SaxHands",
+  "description": "두 손의 움직임으로 익히는 오프라인 색소폰 운지 학습 앱",
+  "lang": "ko",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#f4efdf",
+  "background_color": "#f4efdf",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
