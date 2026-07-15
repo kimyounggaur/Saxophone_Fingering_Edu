@@ -49,6 +49,11 @@ await writeFile(
 );
 
 await writeFile(
+  path.join(functionRoot, "package.json"),
+  `${JSON.stringify({ type: "module" }, null, 2)}\n`,
+);
+
+await writeFile(
   path.join(functionRoot, "index.cjs"),
   `const fs = require("node:fs/promises");
 const path = require("node:path");
