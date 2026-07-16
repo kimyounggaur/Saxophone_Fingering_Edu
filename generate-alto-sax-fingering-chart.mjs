@@ -80,6 +80,7 @@ const htmlPath = resolve(outDir, `${chartConfig.prefix}-sax-fingering-chart.html
 const pdfPath = resolve(outDir, `${chartConfig.prefix}-sax-fingering-chart.pdf`);
 const animationSvgPath = resolve(outDir, "sax-fingering-animation.svg");
 const animationHtmlPath = resolve(outDir, "sax-fingering-animation.html");
+const handPreviewPath = resolve(outDir, "hand-preview.html");
 
 const keys = [
   { id: "ok", label: "OK", x: 90, y: 24, w: 38, h: 18, type: "pill", group: "thumb" },
@@ -132,6 +133,50 @@ const FINGER_MAP = {
   lowEb: { hand: "rh", finger: "pinky", contact: "tip" },
   lowC: { hand: "rh", finger: "pinky", contact: "tip" },
 };
+
+const HAND_GEOMETRY = {
+  lh: {
+    origin: { x: 76, y: 112 },
+    palmPath: "M49 64 C44 79 45 131 51 153 C55 168 69 175 82 168 C93 162 96 145 94 116 L93 82 C92 65 81 54 66 55 C58 56 52 59 49 64 Z",
+    webbingPath: "M78 66 C86 59 94 55 103 54 C94 62 88 72 86 84",
+    fingers: {
+      thumb: { pivot: { x: 80, y: 66 }, rest: { x: 108, y: 48 }, lengths: [25, 18, 0], widths: [10.5, 8.2, 0], bend: 1 },
+      index: { pivot: { x: 69, y: 88 }, rest: { x: 89, y: 73 }, lengths: [25, 16, 11], widths: [9.5, 7.6, 6.1], bend: -1 },
+      middle: { pivot: { x: 69, y: 112 }, rest: { x: 91, y: 101 }, lengths: [27, 17, 12], widths: [10, 7.9, 6.2], bend: -1 },
+      ring: { pivot: { x: 69, y: 136 }, rest: { x: 89, y: 127 }, lengths: [26, 16, 11], widths: [9.4, 7.4, 5.9], bend: -1 },
+      pinky: { pivot: { x: 68, y: 154 }, rest: { x: 61, y: 166 }, lengths: [15, 11, 8], widths: [8.2, 6.3, 5], bend: 1 },
+    },
+  },
+  rh: {
+    origin: { x: 142, y: 207 },
+    palmPath: "M126 154 C118 169 118 218 124 242 C128 258 140 266 152 258 C161 252 162 232 160 205 L159 176 C158 159 149 148 137 148 C132 148 128 151 126 154 Z",
+    webbingPath: "M137 223 C130 229 123 235 115 239 C124 238 134 241 141 247",
+    fingers: {
+      thumb: { pivot: { x: 139, y: 224 }, rest: { x: 119, y: 231 }, lengths: [20, 16, 0], widths: [10.8, 8.5, 0], bend: 1 },
+      index: { pivot: { x: 132, y: 173 }, rest: { x: 108, y: 166 }, lengths: [26, 16, 11], widths: [9.5, 7.6, 6.1], bend: 1 },
+      middle: { pivot: { x: 132, y: 197 }, rest: { x: 105, y: 193 }, lengths: [30, 18, 13], widths: [10, 7.9, 6.2], bend: 1 },
+      ring: { pivot: { x: 132, y: 221 }, rest: { x: 107, y: 218 }, lengths: [27, 17, 12], widths: [9.4, 7.4, 5.9], bend: 1 },
+      pinky: { pivot: { x: 136, y: 238 }, rest: { x: 127, y: 249 }, lengths: [13, 10, 7], widths: [8.2, 6.3, 5], bend: -1 },
+    },
+  },
+};
+
+const HAND_POSES = {
+  REST: { mcp: 8, pip: 12, dip: 6 },
+  PRESS_READY: { mcp: 14, pip: 18, dip: 8 },
+  PRESS: { mcp: 22, pip: 27, dip: 10 },
+};
+
+const POSE_TABLE = Object.fromEntries(keys.map((key) => [key.id, {
+  keyId: key.id,
+  hand: FINGER_MAP[key.id].hand,
+  finger: FINGER_MAP[key.id].finger,
+  contact: FINGER_MAP[key.id].contact,
+  target: key.type === "circle"
+    ? { x: key.x, y: key.y }
+    : { x: key.x + key.w / 2, y: key.y + key.h / 2 },
+  correction: { x: 0, y: 0 },
+}]));
 
 const notes = [
   n("Bb3 / A#3", 58, ["lh1", "lh2", "lh3", "lowBb", "rh1", "rh2", "rh3", "lowC"], "Low Bb", "LH 123 + low Bb | RH 123 + low C", "저음 B-flat"),
@@ -204,6 +249,270 @@ function solfegeName(label) {
   const syllables = { C: "도", D: "레", E: "미", F: "파", G: "솔", A: "라", B: "시" };
   const accidentalMark = match[2] === "#" ? "♯" : match[2] === "b" ? "♭" : "";
   return `${syllables[match[1]]}${accidentalMark}${match[3]}`;
+}
+
+function derivePoses(pressedInput, fingerMap, keySpecs, handGeometry) {
+  const fingerNames = ["thumb", "index", "middle", "ring", "pinky"];
+  const pressed = [...new Set((pressedInput || []).filter((keyId) => fingerMap[keyId]))];
+  const pressedSet = new Set(pressed);
+  const keyById = Object.fromEntries(keySpecs.map((key) => [key.id, key]));
+  const centerOf = (key) => key.type === "circle"
+    ? { x: key.x, y: key.y }
+    : { x: key.x + key.w / 2, y: key.y + key.h / 2 };
+  const pointAt = (point, angle, length) => ({
+    x: point.x + Math.cos(angle) * length,
+    y: point.y + Math.sin(angle) * length,
+  });
+  const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  const toRadians = (degrees) => degrees * Math.PI / 180;
+  const solveTwo = (pivot, target, l1, l2, bend) => {
+    const dx = target.x - pivot.x;
+    const dy = target.y - pivot.y;
+    const rawDistance = Math.hypot(dx, dy);
+    const minimum = Math.abs(l1 - l2) + 0.001;
+    const maximum = l1 + l2 - 0.001;
+    const length = Math.max(minimum, Math.min(maximum, rawDistance || minimum));
+    const direction = rawDistance ? Math.atan2(dy, dx) : 0;
+    const shoulder = Math.acos(Math.max(-1, Math.min(1, (l1 * l1 + length * length - l2 * l2) / (2 * l1 * length))));
+    const angle1 = direction + bend * shoulder;
+    const joint1 = pointAt(pivot, angle1, l1);
+    const wristTarget = pointAt(pivot, direction, length);
+    const angle2 = Math.atan2(wristTarget.y - joint1.y, wristTarget.x - joint1.x);
+    const joint2 = pointAt(joint1, angle2, l2);
+    return { angle1, angle2, joint1, joint2, reachable: rawDistance >= minimum && rawDistance <= maximum };
+  };
+  const solveThree = (pivot, target, lengths, bend) => {
+    const [l1, l2, l3] = lengths;
+    if (!l3) {
+      const solved = solveTwo(pivot, target, l1, l2, bend);
+      return {
+        ...solved,
+        angle3: solved.angle2,
+        tip: solved.joint2,
+        error: distance(solved.joint2, target),
+      };
+    }
+    const evaluate = (angle3) => {
+      const wristTarget = {
+        x: target.x - Math.cos(angle3) * l3,
+        y: target.y - Math.sin(angle3) * l3,
+      };
+      const solved = solveTwo(pivot, wristTarget, l1, l2, bend);
+      const tip = pointAt(solved.joint2, angle3, l3);
+      return { ...solved, angle3, tip, error: distance(tip, target) };
+    };
+    let best = null;
+    const fullStep = Math.PI * 2 / 72;
+    for (let angle = -Math.PI; angle < Math.PI; angle += fullStep) {
+      const candidate = evaluate(angle);
+      if (!best || candidate.error < best.error) best = candidate;
+    }
+    let step = fullStep;
+    for (let pass = 0; pass < 4; pass += 1) {
+      step /= 5;
+      for (let offset = -5; offset <= 5; offset += 1) {
+        const candidate = evaluate(best.angle3 + offset * step);
+        if (candidate.error < best.error) best = candidate;
+      }
+    }
+    return best;
+  };
+  const inverseRoot = (point, root, origin) => {
+    const translated = { x: point.x - root.tx, y: point.y - root.ty };
+    const angle = -toRadians(root.rotation);
+    const dx = translated.x - origin.x;
+    const dy = translated.y - origin.y;
+    return {
+      x: origin.x + dx * Math.cos(angle) - dy * Math.sin(angle),
+      y: origin.y + dx * Math.sin(angle) + dy * Math.cos(angle),
+    };
+  };
+  const forwardRoot = (point, root, origin) => {
+    const angle = toRadians(root.rotation);
+    const dx = point.x - origin.x;
+    const dy = point.y - origin.y;
+    return {
+      x: origin.x + dx * Math.cos(angle) - dy * Math.sin(angle) + root.tx,
+      y: origin.y + dx * Math.sin(angle) + dy * Math.cos(angle) + root.ty,
+    };
+  };
+  const tableDepth = pressedSet.has("lowBb") ? 28 : pressedSet.has("lowB") ? 20 : pressedSet.has("lowCSharp") ? 10 : 0;
+  const palmActive = pressedSet.has("pD") || pressedSet.has("pEb") || pressedSet.has("pF");
+  const sideActive = pressedSet.has("sideE") || pressedSet.has("sideC") || pressedSet.has("sideBb") || pressedSet.has("highFSharp");
+  const roots = {
+    lh: palmActive ? { tx: -4, ty: -1, rotation: 8 } : { tx: 0, ty: tableDepth, rotation: 0 },
+    rh: sideActive ? { tx: 4, ty: -2, rotation: -4 } : { tx: 0, ty: 0, rotation: 0 },
+  };
+  const result = { pressed, contacts: {}, lh: null, rh: null };
+
+  ["lh", "rh"].forEach((side) => {
+    const geometry = handGeometry[side];
+    const root = roots[side];
+    const hand = {
+      side,
+      root: { ...root, cx: geometry.origin.x, cy: geometry.origin.y },
+      palmPath: geometry.palmPath,
+      webbingPath: geometry.webbingPath,
+      palmPress: side === "lh" && palmActive,
+      label: side === "lh" ? "왼손 색소폰 운지" : "오른손 색소폰 운지",
+      fingers: {},
+    };
+    const activeFingerNames = new Set();
+
+    fingerNames.forEach((fingerName) => {
+      const calibration = geometry.fingers[fingerName];
+      const assignments = pressed.filter((keyId) => {
+        const mapping = fingerMap[keyId];
+        return mapping.hand === side && mapping.finger === fingerName;
+      });
+      const active = assignments.length > 0;
+      if (active) activeFingerNames.add(fingerName);
+      let target = calibration.rest;
+      if (active) {
+        const targets = assignments.map((keyId) => centerOf(keyById[keyId]));
+        target = {
+          x: targets.reduce((sum, point) => sum + point.x, 0) / targets.length,
+          y: targets.reduce((sum, point) => sum + point.y, 0) / targets.length,
+        };
+      }
+      const localTarget = inverseRoot(target, root, geometry.origin);
+      const solved = solveThree(calibration.pivot, localTarget, calibration.lengths, calibration.bend);
+      const contact = active ? fingerMap[assignments[0]].contact : null;
+      const pose = {
+        name: fingerName,
+        pivot: { ...calibration.pivot },
+        lengths: [...calibration.lengths],
+        widths: [...calibration.widths],
+        bend: calibration.bend,
+        angles: { mcp: solved.angle1, pip: solved.angle2, dip: solved.angle3 },
+        points: { joint1: solved.joint1, joint2: solved.joint2, tip: solved.tip },
+        active,
+        keyIds: assignments,
+        contact,
+        press: active,
+        error: solved.error,
+      };
+      hand.fingers[fingerName] = pose;
+
+      assignments.forEach((keyId) => {
+        const keyTarget = centerOf(keyById[keyId]);
+        const actual = forwardRoot(solved.tip, root, geometry.origin);
+        result.contacts[keyId] = {
+          x: keyTarget.x,
+          y: keyTarget.y,
+          actualX: actual.x,
+          actualY: actual.y,
+          error: distance(actual, keyTarget),
+          hand: side,
+          finger: fingerName,
+          contact: fingerMap[keyId].contact,
+        };
+      });
+    });
+
+    ["index", "middle", "ring", "pinky"].forEach((fingerName, index, ordered) => {
+      const pose = hand.fingers[fingerName];
+      if (pose.active) return;
+      const neighborNames = [ordered[index - 1], ordered[index + 1]].filter(Boolean);
+      const activeNeighbors = neighborNames.map((name) => hand.fingers[name]).filter((finger) => finger.active);
+      if (!activeNeighbors.length) return;
+      const source = activeNeighbors[0].angles;
+      pose.angles = {
+        mcp: pose.angles.mcp + (source.mcp - pose.angles.mcp) * 0.25,
+        pip: pose.angles.pip + (source.pip - pose.angles.pip) * 0.25,
+        dip: pose.angles.dip + (source.dip - pose.angles.dip) * 0.25,
+      };
+    });
+
+    result[side] = hand;
+  });
+
+  pressed.forEach((keyId) => {
+    if (fingerMap[keyId].finger !== "palm") return;
+    const point = centerOf(keyById[keyId]);
+    result.contacts[keyId] = {
+      x: point.x,
+      y: point.y,
+      actualX: point.x,
+      actualY: point.y,
+      error: 0,
+      hand: fingerMap[keyId].hand,
+      finger: "palm",
+      contact: "palm",
+    };
+  });
+  return result;
+}
+
+function buildHand(side, pose, prefix = "hand") {
+  const round = (value) => Number(value.toFixed(3));
+  const degrees = (value) => round(value * 180 / Math.PI);
+  const escapeAttribute = (value) => String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+  const gradientId = `${prefix}-${side}-skin`;
+  const shadowId = `${prefix}-${side}-shadow`;
+  const segmentPath = (length, startWidth, endWidth) => {
+    const start = startWidth / 2;
+    const end = endWidth / 2;
+    return `M0 ${round(-start)} L${round(length)} ${round(-end)} Q${round(length + end * 0.72)} 0 ${round(length)} ${round(end)} L0 ${round(start)} Q${round(-start * 0.72)} 0 0 ${round(-start)} Z`;
+  };
+  const creaseMarkup = (length, width, count = 2) => Array.from({ length: count }, (_, index) => {
+    const x = length * (0.78 + index * 0.08);
+    return `<path class="hand-crease" d="M${round(x)} ${round(-width * 0.24)} Q${round(x + 1.1)} 0 ${round(x)} ${round(width * 0.24)}"/>`;
+  }).join("");
+  const fingerMarkup = (finger) => {
+    const [l1, l2, l3] = finger.lengths;
+    const [w1, w2, w3] = finger.widths;
+    const mcp = degrees(finger.angles.mcp);
+    const pip = degrees(finger.angles.pip - finger.angles.mcp);
+    const dip = degrees(finger.angles.dip - finger.angles.pip);
+    const activeClass = finger.active ? " is-pressed" : "";
+    const distalScale = finger.active ? 0.94 : 1;
+    const nailOnSecond = !l3;
+    const nailSecond = nailOnSecond
+      ? `<ellipse class="hand-nail" cx="${round(l2 * 0.68)}" cy="${round(-w2 * 0.08)}" rx="${round(Math.max(3.2, l2 * 0.2))}" ry="${round(w2 * 0.25)}"/>`
+      : "";
+    const distal = l3 ? `<g class="joint joint-dip" data-joint="dip" transform="translate(${round(l2)} 0) rotate(${dip}) scale(${distalScale} 1)">
+          <path class="hand-segment seg-distal" d="${segmentPath(l3, w2 * 0.9, w3)}"/>
+          <ellipse class="hand-nail" cx="${round(l3 * 0.64)}" cy="${round(-w3 * 0.08)}" rx="${round(Math.max(2.5, l3 * 0.24))}" ry="${round(w3 * 0.27)}"/>
+          <ellipse class="finger-contact-shadow" cx="${round(l3 + w3 * 0.12)}" cy="1" rx="${round(w3 * 0.52)}" ry="${round(w3 * 0.25)}" style="opacity:${finger.active ? 1 : 0}"/>
+        </g>` : `<ellipse class="finger-contact-shadow" cx="${round(l2 + w2 * 0.12)}" cy="1" rx="${round(w2 * 0.52)}" ry="${round(w2 * 0.25)}" style="opacity:${finger.active ? 1 : 0}"/>`;
+    return `<g class="finger finger-${finger.name}${activeClass}" data-finger="${finger.name}" transform="translate(${round(finger.pivot.x)} ${round(finger.pivot.y)}) rotate(${mcp})">
+      <path class="hand-segment seg-proximal" d="${segmentPath(l1, w1, w2 * 1.04)}"/>
+      ${creaseMarkup(l1, w2)}
+      <g class="joint joint-pip" data-joint="pip" transform="translate(${round(l1)} 0) rotate(${pip})">
+        <path class="hand-segment seg-middle" d="${segmentPath(l2, w2, (l3 ? w3 * 1.08 : w2 * 0.78))}"/>
+        ${creaseMarkup(l2, l3 ? w3 : w2 * 0.76, 2)}
+        ${nailSecond}
+        ${distal}
+      </g>
+    </g>`;
+  };
+  const root = pose.root;
+  const rootTransform = `translate(${round(root.tx)} ${round(root.ty)}) rotate(${round(root.rotation)} ${round(root.cx)} ${round(root.cy)})`;
+  const fingers = ["thumb", "index", "middle", "ring", "pinky"].map((name) => fingerMarkup(pose.fingers[name])).join("");
+  return `<g class="hand hand-${side}${pose.palmPress ? " is-palm-pressed" : ""}" id="${prefix}-hand-${side}" data-hand="${side}" role="img" aria-label="${escapeAttribute(pose.label)}" transform="${rootTransform}">
+    <defs>
+      <linearGradient id="${gradientId}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f8cfae"/><stop offset="0.5" stop-color="#f3bc98"/><stop offset="1" stop-color="#e8a87d"/>
+      </linearGradient>
+      <filter id="${shadowId}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.1"/></filter>
+    </defs>
+    <path class="hand-palm" d="${pose.palmPath}" style="fill:url(#${gradientId})"/>
+    <path class="hand-webbing" d="${pose.webbingPath}"/>
+    ${fingers}
+  </g>`;
+}
+
+function validatePoseTable(keySpecs, fingerMap, handGeometry) {
+  return keySpecs.map((key) => {
+    const frame = derivePoses([key.id], fingerMap, keySpecs, handGeometry);
+    const contact = frame.contacts[key.id];
+    return { keyId: key.id, error: contact?.error ?? Number.POSITIVE_INFINITY };
+  }).filter((result) => result.error > 1.5);
 }
 
 function accidental(label) {
@@ -415,8 +724,112 @@ function makeHtml() {
 </html>`;
 }
 
+function makeHandPreviewHtml() {
+  const initial = derivePoses(notes[0].pressed, FINGER_MAP, keys, HAND_GEOMETRY);
+  return `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hand Rig Preview / 손 SVG 리그 프리뷰</title>
+  <style>
+    :root{--paper:#f8fafc;--ink:#0f172a;--line:#cbd5e1;--accent:#0f766e}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,"Malgun Gothic",sans-serif}
+    main{max-width:1240px;margin:0 auto;padding:28px 18px 60px}h1{margin:0 0 8px;font-size:34px}.lead{margin:0 0 20px;color:#475569}
+    .toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:16px}.toolbar label{display:grid;gap:5px;font-size:12px;font-weight:800}
+    select,button,input{font:700 14px Arial,"Malgun Gothic",sans-serif}select,button{min-height:44px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:0 12px}button{cursor:pointer}
+    .preview-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:18px}.stage{min-height:620px;border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden}
+    #preview-stage{display:block;width:100%;height:620px}.key circle,.key rect{fill:#fff;stroke:#64748b;stroke-width:1.2}.key.active circle,.key.active rect{fill:#111827}.key text{font:700 6px Arial;fill:#475569;text-anchor:middle;dominant-baseline:middle}.key.active text{fill:#fff}
+    ${handSvgCss()}
+    .panel{border:1px solid var(--line);border-radius:16px;background:#fff;padding:16px}.panel h2{margin:0 0 12px;font-size:18px}.sliders{display:grid;gap:10px;max-height:500px;overflow:auto;padding-right:5px}
+    .finger-controls{border-top:1px solid #e2e8f0;padding-top:9px}.finger-controls strong{display:block;margin-bottom:5px}.joint-control{display:grid;grid-template-columns:38px 1fr 48px;align-items:center;gap:7px;font-size:11px}.joint-control output{text-align:right;font-family:monospace}
+    pre{max-height:220px;overflow:auto;margin:14px 0 0;padding:12px;border-radius:10px;background:#0f172a;color:#e2e8f0;font-size:11px}
+    @media(max-width:820px){.preview-grid{grid-template-columns:1fr}.stage{min-height:430px}#preview-stage{height:430px}}
+  </style>
+</head>
+<body><main>
+  <h1>해부학적 양손 SVG 리그 프리뷰</h1>
+  <p class="lead">마디 테이퍼·손톱·관절 주름·스킨 음영·엄지 물갈퀴·접점 압착을 독립 화면에서 점검합니다.</p>
+  <div class="toolbar">
+    <label>음<select id="preview-note"></select></label>
+    <button id="preset-rest" type="button">REST</button>
+    <button id="preset-press" type="button">PRESS</button>
+    <button id="copy-pose" type="button">포즈 JSON 복사</button>
+  </div>
+  <div class="preview-grid">
+    <section class="stage">
+      <svg id="preview-stage" viewBox="0 0 224 292" role="img" aria-label="양손 색소폰 운지 리그 프리뷰">
+        <defs><pattern id="preview-grid" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="#e2e8f0" stroke-width=".45"/></pattern></defs>
+        <rect width="224" height="292" fill="url(#preview-grid)"/>
+        <line x1="94" y1="45" x2="94" y2="238" stroke="#94a3b8" stroke-width="1.5"/>
+        <g id="preview-keys"></g><g id="preview-hands">${buildHand("lh", initial.lh, "preview")}${buildHand("rh", initial.rh, "preview")}</g>
+        <g id="preview-contacts"></g>
+      </svg>
+    </section>
+    <aside class="panel"><h2>관절 각도</h2><div id="preview-sliders" class="sliders"></div><pre id="preview-json"></pre></aside>
+  </div>
+</main>
+<script>
+(() => {
+  const DATA = ${animationDataJson()};
+  const buildHand = ${buildHand.toString()};
+  const derivePoses = ${derivePoses.toString()};
+  const select = document.getElementById("preview-note");
+  const keyLayer = document.getElementById("preview-keys");
+  const handLayer = document.getElementById("preview-hands");
+  const contactLayer = document.getElementById("preview-contacts");
+  const sliders = document.getElementById("preview-sliders");
+  let noteIndex = 0;
+  let frame = derivePoses(DATA.notes[0].pressed, DATA.fingerMap, DATA.keys, DATA.handGeometry);
+  const center = (key) => key.type === "circle" ? {x:key.x,y:key.y} : {x:key.x+key.w/2,y:key.y+key.h/2};
+  const renderKeys = () => {
+    const pressed = new Set(frame.pressed);
+    keyLayer.innerHTML = DATA.keys.map((key) => {
+      const c = center(key); const active = pressed.has(key.id); const cls = active ? "key active" : "key";
+      const shape = key.type === "circle" ? '<circle cx="'+key.x+'" cy="'+key.y+'" r="'+key.r+'"/>' : '<rect x="'+key.x+'" y="'+key.y+'" width="'+key.w+'" height="'+key.h+'" rx="6"/>';
+      return '<g class="'+cls+'">'+shape+'<text x="'+c.x+'" y="'+(c.y+2.5)+'">'+key.label+'</text></g>';
+    }).join("");
+  };
+  const render = (rebuildControls = false) => {
+    handLayer.innerHTML = buildHand("lh", frame.lh, "preview") + buildHand("rh", frame.rh, "preview");
+    contactLayer.innerHTML = Object.values(frame.contacts).map((point) => '<circle class="hand-contact-dot" cx="'+point.x+'" cy="'+point.y+'" r="2.6"/>').join("");
+    renderKeys();
+    document.getElementById("preview-json").textContent = JSON.stringify({lh:frame.lh.root,rh:frame.rh.root,fingers:{lh:frame.lh.fingers,rh:frame.rh.fingers}}, null, 2);
+    if (rebuildControls) buildControls();
+  };
+  const buildControls = () => {
+    sliders.replaceChildren();
+    ["lh","rh"].forEach((side) => ["thumb","index","middle","ring","pinky"].forEach((fingerName) => {
+      const box = document.createElement("div"); box.className = "finger-controls"; box.innerHTML = '<strong>'+(side === "lh" ? "왼손 " : "오른손 ")+fingerName+'</strong>';
+      [["mcp","MCP"],["pip","PIP"],["dip","DIP"]].forEach(([joint,label]) => {
+        const row = document.createElement("label"); row.className = "joint-control";
+        const input = document.createElement("input"); input.type="range"; input.min="-180"; input.max="180"; input.step="1"; input.value=String(Math.round(frame[side].fingers[fingerName].angles[joint]*180/Math.PI));
+        const output=document.createElement("output"); output.value=input.value+'°';
+        input.addEventListener("input",()=>{frame[side].fingers[fingerName].angles[joint]=Number(input.value)*Math.PI/180;output.value=input.value+'°';render(false);});
+        row.append(label,input,output); box.append(row);
+      }); sliders.append(box);
+    }));
+  };
+  DATA.notes.forEach((note,index)=>{const option=document.createElement("option");option.value=String(index);option.textContent=note.solfege+' ('+note.label+') · '+note.short;select.append(option);});
+  select.addEventListener("change",()=>{noteIndex=Number(select.value);frame=derivePoses(DATA.notes[noteIndex].pressed,DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
+  document.getElementById("preset-rest").addEventListener("click",()=>{frame=derivePoses([],DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
+  document.getElementById("preset-press").addEventListener("click",()=>{frame=derivePoses(DATA.notes[noteIndex].pressed,DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
+  document.getElementById("copy-pose").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(document.getElementById("preview-json").textContent);}catch{}});
+  render(true);
+})();
+</script></body></html>`;
+}
+
 function animationDataJson() {
-  return JSON.stringify({ keys, notes, chartConfigs, fingerMap: FINGER_MAP }, null, 2).replaceAll("<", "\\u003c");
+  return JSON.stringify({
+    keys,
+    notes,
+    chartConfigs,
+    fingerMap: FINGER_MAP,
+    handGeometry: HAND_GEOMETRY,
+    handPoses: HAND_POSES,
+    poseTable: POSE_TABLE,
+  }, null, 2).replaceAll("<", "\\u003c");
 }
 
 function makeAnimationStageSvg() {
@@ -721,8 +1134,31 @@ function animationRuntime() {
   `;
 }
 
+function handSvgCss() {
+  return `
+    .hand{pointer-events:none}
+    .hand-palm,.hand-segment{fill:#f3bc98;stroke:#9a5c35;stroke-width:1.1;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+    .hand-palm{filter:drop-shadow(0 1px 1px rgb(82 45 25 / 18%))}
+    .hand-webbing{fill:none;stroke:#c98a5e;stroke-width:1.25;stroke-linecap:round;vector-effect:non-scaling-stroke}
+    .hand-crease{fill:none;stroke:#c98a5e;stroke-width:.62;stroke-linecap:round;opacity:.82;vector-effect:non-scaling-stroke}
+    .hand-nail{fill:#ffe5d0;stroke:#d89a73;stroke-width:.48;vector-effect:non-scaling-stroke}
+    .finger-contact-shadow{fill:#111827;opacity:0;filter:blur(.45px)}
+    .finger.is-pressed .seg-distal{filter:drop-shadow(0 .7px .35px rgb(17 24 39 / 25%))}
+    .hand.is-palm-pressed .hand-palm{filter:drop-shadow(-1px 1px 1px rgb(15 118 110 / 28%))}
+    .hand-contact-dot{fill:#0f766e;stroke:#fff;stroke-width:1.1;vector-effect:non-scaling-stroke}
+    .hand-contact-tag{fill:#0f766e;stroke:#fff;stroke-width:.8;vector-effect:non-scaling-stroke}
+    .hand-contact-label{fill:#fff;font:700 6.2px Arial,"Malgun Gothic",sans-serif;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+    @media print{
+      .hand-palm,.hand-segment{fill:#f3bc98!important;filter:none!important}
+      .hand-crease,.hand-webbing{stroke-width:.8}
+      .finger-contact-shadow{display:none}
+    }
+  `;
+}
+
 function animationSvgCss() {
   return `
+    ${handSvgCss()}
     .anim-bg{fill:#f8fafc}
     .anim-title{font:800 34px Arial,"Malgun Gothic",sans-serif;fill:#0f172a}
     .anim-subtitle{font:17px Arial,"Malgun Gothic",sans-serif;fill:#475569}
@@ -882,10 +1318,16 @@ async function main() {
   if (Object.keys(FINGER_MAP).length !== keys.length) {
     throw new Error(`FINGER_MAP 개수 불일치: keys=${keys.length}, map=${Object.keys(FINGER_MAP).length}`);
   }
+  const poseErrors = validatePoseTable(keys, FINGER_MAP, HAND_GEOMETRY);
+  if (poseErrors.length) {
+    console.table(poseErrors);
+    throw new Error(`손끝-키 접점 오차가 1.5를 넘는 키가 ${poseErrors.length}개입니다.`);
+  }
   writeFileSync(svgPath, makePosterSvg(), "utf8");
   writeFileSync(htmlPath, makeHtml(), "utf8");
   writeFileSync(animationHtmlPath, makeAnimationHtml(), "utf8");
   writeFileSync(animationSvgPath, makeAnimationSvg(), "utf8");
+  writeFileSync(handPreviewPath, makeHandPreviewHtml(), "utf8");
 
   if (!skipPdf) {
     const chromium = loadChromium();
@@ -902,7 +1344,7 @@ async function main() {
     await browser.close();
   }
 
-  const outputs = [svgPath, htmlPath, ...(skipPdf ? [] : [pdfPath]), animationHtmlPath, animationSvgPath];
+  const outputs = [svgPath, htmlPath, ...(skipPdf ? [] : [pdfPath]), animationHtmlPath, animationSvgPath, handPreviewPath];
   console.log(`Wrote:\n- ${outputs.join("\n- ")}${skipPdf ? "\n(PDF skipped with --no-pdf)" : ""}`);
 }
 

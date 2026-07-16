@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="Saxophone fingering animation">
   <style>
+    
+    .hand{pointer-events:none}
+    .hand-palm,.hand-segment{fill:#f3bc98;stroke:#9a5c35;stroke-width:1.1;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+    .hand-palm{filter:drop-shadow(0 1px 1px rgb(82 45 25 / 18%))}
+    .hand-webbing{fill:none;stroke:#c98a5e;stroke-width:1.25;stroke-linecap:round;vector-effect:non-scaling-stroke}
+    .hand-crease{fill:none;stroke:#c98a5e;stroke-width:.62;stroke-linecap:round;opacity:.82;vector-effect:non-scaling-stroke}
+    .hand-nail{fill:#ffe5d0;stroke:#d89a73;stroke-width:.48;vector-effect:non-scaling-stroke}
+    .finger-contact-shadow{fill:#111827;opacity:0;filter:blur(.45px)}
+    .finger.is-pressed .seg-distal{filter:drop-shadow(0 .7px .35px rgb(17 24 39 / 25%))}
+    .hand.is-palm-pressed .hand-palm{filter:drop-shadow(-1px 1px 1px rgb(15 118 110 / 28%))}
+    .hand-contact-dot{fill:#0f766e;stroke:#fff;stroke-width:1.1;vector-effect:non-scaling-stroke}
+    .hand-contact-tag{fill:#0f766e;stroke:#fff;stroke-width:.8;vector-effect:non-scaling-stroke}
+    .hand-contact-label{fill:#fff;font:700 6.2px Arial,"Malgun Gothic",sans-serif;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+    @media print{
+      .hand-palm,.hand-segment{fill:#f3bc98!important;filter:none!important}
+      .hand-crease,.hand-webbing{stroke-width:.8}
+      .finger-contact-shadow{display:none}
+    }
+  
     .anim-bg{fill:#f8fafc}
     .anim-title{font:800 34px Arial,"Malgun Gothic",sans-serif;fill:#0f172a}
     .anim-subtitle{font:17px Arial,"Malgun Gothic",sans-serif;fill:#475569}
@@ -896,6 +915,579 @@
       "hand": "rh",
       "finger": "pinky",
       "contact": "tip"
+    }
+  },
+  "handGeometry": {
+    "lh": {
+      "origin": {
+        "x": 76,
+        "y": 112
+      },
+      "palmPath": "M49 64 C44 79 45 131 51 153 C55 168 69 175 82 168 C93 162 96 145 94 116 L93 82 C92 65 81 54 66 55 C58 56 52 59 49 64 Z",
+      "webbingPath": "M78 66 C86 59 94 55 103 54 C94 62 88 72 86 84",
+      "fingers": {
+        "thumb": {
+          "pivot": {
+            "x": 80,
+            "y": 66
+          },
+          "rest": {
+            "x": 108,
+            "y": 48
+          },
+          "lengths": [
+            25,
+            18,
+            0
+          ],
+          "widths": [
+            10.5,
+            8.2,
+            0
+          ],
+          "bend": 1
+        },
+        "index": {
+          "pivot": {
+            "x": 69,
+            "y": 88
+          },
+          "rest": {
+            "x": 89,
+            "y": 73
+          },
+          "lengths": [
+            25,
+            16,
+            11
+          ],
+          "widths": [
+            9.5,
+            7.6,
+            6.1
+          ],
+          "bend": -1
+        },
+        "middle": {
+          "pivot": {
+            "x": 69,
+            "y": 112
+          },
+          "rest": {
+            "x": 91,
+            "y": 101
+          },
+          "lengths": [
+            27,
+            17,
+            12
+          ],
+          "widths": [
+            10,
+            7.9,
+            6.2
+          ],
+          "bend": -1
+        },
+        "ring": {
+          "pivot": {
+            "x": 69,
+            "y": 136
+          },
+          "rest": {
+            "x": 89,
+            "y": 127
+          },
+          "lengths": [
+            26,
+            16,
+            11
+          ],
+          "widths": [
+            9.4,
+            7.4,
+            5.9
+          ],
+          "bend": -1
+        },
+        "pinky": {
+          "pivot": {
+            "x": 68,
+            "y": 154
+          },
+          "rest": {
+            "x": 61,
+            "y": 166
+          },
+          "lengths": [
+            15,
+            11,
+            8
+          ],
+          "widths": [
+            8.2,
+            6.3,
+            5
+          ],
+          "bend": 1
+        }
+      }
+    },
+    "rh": {
+      "origin": {
+        "x": 142,
+        "y": 207
+      },
+      "palmPath": "M126 154 C118 169 118 218 124 242 C128 258 140 266 152 258 C161 252 162 232 160 205 L159 176 C158 159 149 148 137 148 C132 148 128 151 126 154 Z",
+      "webbingPath": "M137 223 C130 229 123 235 115 239 C124 238 134 241 141 247",
+      "fingers": {
+        "thumb": {
+          "pivot": {
+            "x": 139,
+            "y": 224
+          },
+          "rest": {
+            "x": 119,
+            "y": 231
+          },
+          "lengths": [
+            20,
+            16,
+            0
+          ],
+          "widths": [
+            10.8,
+            8.5,
+            0
+          ],
+          "bend": 1
+        },
+        "index": {
+          "pivot": {
+            "x": 132,
+            "y": 173
+          },
+          "rest": {
+            "x": 108,
+            "y": 166
+          },
+          "lengths": [
+            26,
+            16,
+            11
+          ],
+          "widths": [
+            9.5,
+            7.6,
+            6.1
+          ],
+          "bend": 1
+        },
+        "middle": {
+          "pivot": {
+            "x": 132,
+            "y": 197
+          },
+          "rest": {
+            "x": 105,
+            "y": 193
+          },
+          "lengths": [
+            30,
+            18,
+            13
+          ],
+          "widths": [
+            10,
+            7.9,
+            6.2
+          ],
+          "bend": 1
+        },
+        "ring": {
+          "pivot": {
+            "x": 132,
+            "y": 221
+          },
+          "rest": {
+            "x": 107,
+            "y": 218
+          },
+          "lengths": [
+            27,
+            17,
+            12
+          ],
+          "widths": [
+            9.4,
+            7.4,
+            5.9
+          ],
+          "bend": 1
+        },
+        "pinky": {
+          "pivot": {
+            "x": 136,
+            "y": 238
+          },
+          "rest": {
+            "x": 127,
+            "y": 249
+          },
+          "lengths": [
+            13,
+            10,
+            7
+          ],
+          "widths": [
+            8.2,
+            6.3,
+            5
+          ],
+          "bend": -1
+        }
+      }
+    }
+  },
+  "handPoses": {
+    "REST": {
+      "mcp": 8,
+      "pip": 12,
+      "dip": 6
+    },
+    "PRESS_READY": {
+      "mcp": 14,
+      "pip": 18,
+      "dip": 8
+    },
+    "PRESS": {
+      "mcp": 22,
+      "pip": 27,
+      "dip": 10
+    }
+  },
+  "poseTable": {
+    "ok": {
+      "keyId": "ok",
+      "hand": "lh",
+      "finger": "thumb",
+      "contact": "thumb",
+      "target": {
+        "x": 109,
+        "y": 33
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "pD": {
+      "keyId": "pD",
+      "hand": "lh",
+      "finger": "palm",
+      "contact": "palm",
+      "target": {
+        "x": 32,
+        "y": 79.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "pEb": {
+      "keyId": "pEb",
+      "hand": "lh",
+      "finger": "palm",
+      "contact": "palm",
+      "target": {
+        "x": 32,
+        "y": 100.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "pF": {
+      "keyId": "pF",
+      "hand": "lh",
+      "finger": "palm",
+      "contact": "palm",
+      "target": {
+        "x": 32,
+        "y": 121.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "frontF": {
+      "keyId": "frontF",
+      "hand": "lh",
+      "finger": "index",
+      "contact": "tip",
+      "target": {
+        "x": 94,
+        "y": 64
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "lh1": {
+      "keyId": "lh1",
+      "hand": "lh",
+      "finger": "index",
+      "contact": "pad",
+      "target": {
+        "x": 94,
+        "y": 88
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "bis": {
+      "keyId": "bis",
+      "hand": "lh",
+      "finger": "index",
+      "contact": "pad",
+      "target": {
+        "x": 118,
+        "y": 104
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "lh2": {
+      "keyId": "lh2",
+      "hand": "lh",
+      "finger": "middle",
+      "contact": "pad",
+      "target": {
+        "x": 94,
+        "y": 112
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "lh3": {
+      "keyId": "lh3",
+      "hand": "lh",
+      "finger": "ring",
+      "contact": "pad",
+      "target": {
+        "x": 94,
+        "y": 136
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "gSharp": {
+      "keyId": "gSharp",
+      "hand": "lh",
+      "finger": "pinky",
+      "contact": "tip",
+      "target": {
+        "x": 57,
+        "y": 152.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "lowCSharp": {
+      "keyId": "lowCSharp",
+      "hand": "lh",
+      "finger": "pinky",
+      "contact": "tip",
+      "target": {
+        "x": 57,
+        "y": 172.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "lowB": {
+      "keyId": "lowB",
+      "hand": "lh",
+      "finger": "pinky",
+      "contact": "tip",
+      "target": {
+        "x": 57,
+        "y": 192.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "lowBb": {
+      "keyId": "lowBb",
+      "hand": "lh",
+      "finger": "pinky",
+      "contact": "tip",
+      "target": {
+        "x": 57,
+        "y": 212.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "sideE": {
+      "keyId": "sideE",
+      "hand": "rh",
+      "finger": "index",
+      "contact": "knuckle",
+      "target": {
+        "x": 156,
+        "y": 155.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "sideC": {
+      "keyId": "sideC",
+      "hand": "rh",
+      "finger": "index",
+      "contact": "knuckle",
+      "target": {
+        "x": 156,
+        "y": 175.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "sideBb": {
+      "keyId": "sideBb",
+      "hand": "rh",
+      "finger": "index",
+      "contact": "knuckle",
+      "target": {
+        "x": 156,
+        "y": 195.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "highFSharp": {
+      "keyId": "highFSharp",
+      "hand": "rh",
+      "finger": "middle",
+      "contact": "tip",
+      "target": {
+        "x": 189.5,
+        "y": 175.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "rh1": {
+      "keyId": "rh1",
+      "hand": "rh",
+      "finger": "index",
+      "contact": "pad",
+      "target": {
+        "x": 94,
+        "y": 174
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "altFSharp": {
+      "keyId": "altFSharp",
+      "hand": "rh",
+      "finger": "ring",
+      "contact": "tip",
+      "target": {
+        "x": 118,
+        "y": 190
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "rh2": {
+      "keyId": "rh2",
+      "hand": "rh",
+      "finger": "middle",
+      "contact": "pad",
+      "target": {
+        "x": 94,
+        "y": 198
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "rh3": {
+      "keyId": "rh3",
+      "hand": "rh",
+      "finger": "ring",
+      "contact": "pad",
+      "target": {
+        "x": 94,
+        "y": 222
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "lowEb": {
+      "keyId": "lowEb",
+      "hand": "rh",
+      "finger": "pinky",
+      "contact": "tip",
+      "target": {
+        "x": 133,
+        "y": 244.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    "lowC": {
+      "keyId": "lowC",
+      "hand": "rh",
+      "finger": "pinky",
+      "contact": "tip",
+      "target": {
+        "x": 133,
+        "y": 264.5
+      },
+      "correction": {
+        "x": 0,
+        "y": 0
+      }
     }
   }
 };
