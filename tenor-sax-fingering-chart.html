@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tenor Saxophone Fingering Chart / 테너 색소폰 운지표</title>
+  <style>
+    
+    .poster-title{font:800 52px Arial,"Malgun Gothic",sans-serif;fill:#0f172a}
+    .poster-korean{font:700 28px Arial,"Malgun Gothic",sans-serif;fill:#334155}
+    .poster-lead{font:18px Arial,"Malgun Gothic",sans-serif;fill:#475569}
+    .poster-source{font:16px Arial,"Malgun Gothic",sans-serif;fill:#64748b}
+    .poster-card-bg{fill:#fff;stroke:#cbd5e1;stroke-width:1.4}
+    .poster-note{font:800 31px Arial,"Malgun Gothic",sans-serif;fill:#0f172a}
+    .poster-sub{font:17px Arial,"Malgun Gothic",sans-serif;fill:#475569}
+    .poster-formula{font:700 15px Arial,"Malgun Gothic",sans-serif;fill:#1f2937}
+    .poster-foot{font:13px Arial,"Malgun Gothic",sans-serif;fill:#b45309}
+    .legend-bg{fill:#e2e8f0;stroke:#cbd5e1}
+    .legend-title{font:800 23px Arial,"Malgun Gothic",sans-serif;fill:#0f172a}
+    .legend-text{font:16px Arial,"Malgun Gothic",sans-serif;fill:#334155}
+    .legend-note{font:16px Arial,"Malgun Gothic",sans-serif;fill:#475569}
+    .body-line,.hand-sep{stroke:#cbd5e1;stroke-width:2;stroke-linecap:round}
+    .hand-label{font:700 8px Arial,sans-serif;fill:#94a3b8;text-anchor:middle}
+    .key circle,.key rect{fill:#fff;stroke:#64748b;stroke-width:1.5}
+    .key text{font:700 8px Arial,sans-serif;fill:#475569;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+    .key.active circle,.key.active rect,.sample-filled{fill:#111827;stroke:#111827}
+    .key.active text{fill:#fff}
+    .sample-open{fill:#fff;stroke:#64748b;stroke-width:1.5}
+    .staff-line,.ledger{stroke:#334155;stroke-width:1}
+    .stem{stroke:#111827;stroke-width:1.5}
+    .notehead{fill:#111827}
+    .accidental{font:700 18px Arial,sans-serif;fill:#111827}
+  
+    :root{--ink:#0f172a;--muted:#475569;--line:#cbd5e1;--paper:#f8fafc;--accent:#0f766e}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,"Malgun Gothic",sans-serif}
+    main{max-width:1180px;margin:0 auto;padding:32px 18px 56px}
+    .hero{display:flex;justify-content:space-between;gap:28px;align-items:flex-end;padding:22px 0 24px;border-bottom:2px solid var(--line)}
+    .eyebrow{margin:0 0 8px;color:var(--accent);font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+    h1{margin:0;font-size:42px;line-height:1.05}
+    .subtitle{max-width:760px;margin:12px 0 0;font-size:17px;line-height:1.55;color:var(--muted)}
+    .legend-box{width:340px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:14px;color:#334155}
+    .legend-box>div{display:inline-flex;align-items:center;margin:0 12px 8px 0;gap:6px;font-weight:700}
+    .legend-box p{margin:4px 0 0;line-height:1.45}
+    .dot{display:inline-block;width:16px;height:16px;border-radius:50%;border:1.5px solid #64748b}
+    .dot.filled{background:#111827;border-color:#111827}
+    .pill{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:18px;border-radius:9px;background:#111827;color:#fff;font-weight:800;font-size:11px}
+    .sheet{margin-top:26px;padding:20px;background:#fff;border:1px solid var(--line);border-radius:12px}
+    .sheet-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:14px;border-bottom:1px solid #e2e8f0;padding-bottom:10px}
+    .sheet h2{margin:0;font-size:23px}
+    .sheet-head p{margin:4px 0 0;color:var(--muted)}
+    .sheet-mark{font-size:13px;color:#64748b;font-weight:700;text-transform:uppercase}
+    .card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .card{border:1px solid #dbe3ef;border-radius:10px;padding:10px;min-height:206px;display:flex;flex-direction:column}
+    .card header{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}
+    .card h3{margin:0;font-size:21px;line-height:1}
+    .card header p{margin:4px 0 0;color:var(--muted);font-size:12px;font-weight:700}
+    .concert{font-size:12px;color:#0f766e;font-weight:800;white-space:nowrap}
+    .visuals{display:grid;grid-template-columns:1fr 116px;align-items:center;gap:8px;min-height:116px}
+    .staff{width:100%;height:auto}
+    .diagram{width:112px;height:auto}
+    .formula{margin-top:auto;font-size:12px;font-weight:800;color:#1f2937;line-height:1.3}
+    .note{margin-top:3px;font-size:11px;color:#b45309;font-weight:700}
+    .sources{margin:28px 0 0;padding:18px 20px;background:#fff;border:1px solid var(--line);border-radius:12px}
+    .sources h2{font-size:20px;margin:0 0 8px}
+    .sources p{margin:0 0 8px;color:var(--muted)}
+    .sources ul{margin:0;padding-left:19px;line-height:1.55}
+    .sources a{color:#0f766e}
+    @media (max-width:850px){
+      .hero{display:block}.legend-box{width:auto;margin-top:18px}.card-grid{grid-template-columns:1fr}.card{min-height:0}
+    }
+    @page{size:A4 landscape;margin:8mm}
+    @media print{
+      body{background:#fff}
+      main{max-width:none;padding:0}
+      .hero,.sources{break-after:page;margin:0;border-radius:0;border:0}
+      .sheet{break-after:page;margin:0;border:0;border-radius:0;padding:0;background:#fff}
+      .sheet:last-of-type{break-after:auto}
+      .sheet-head{margin-bottom:5px;padding-bottom:5px}
+      .sheet h2{font-size:18px}
+      .sheet-head p,.sheet-mark{font-size:10px}
+      .card-grid{grid-template-columns:repeat(3,1fr);gap:5px}
+      .card{min-height:42mm;padding:5px;border-color:#cbd5e1;break-inside:avoid}
+      .card h3{font-size:15px}
+      .card header{margin-bottom:2px}
+      .card header p,.concert{font-size:9px}
+      .visuals{grid-template-columns:1fr 25mm;gap:2px;min-height:24mm}
+      .diagram{width:24mm}
+      .formula{font-size:8.5px}
+      .note{font-size:8px}
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Written pitch · Bb tenor sax</p>
+        <h1>Tenor Saxophone Fingering Chart</h1>
+        <p class="subtitle">테너 색소폰 운지표: 기보음 low Bb부터 high F#까지, 표준 운지와 핵심 대체 운지 메모를 함께 정리했습니다.</p>
+      </div>
+      <div class="legend-box">
+        <div><span class="dot filled"></span>누름/닫힘</div>
+        <div><span class="dot open"></span>열림</div>
+        <div><span class="pill">OK</span>옥타브 키</div>
+        <p>테너는 Bb 조 이조악기이므로 실제 소리는 기보음보다 장9도 낮습니다. High F#는 high F# key가 있는 악기 기준입니다.</p>
+      </div>
+    </section>
+    <section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>1. Low Register</h2>
+          <p>Written Bb3-Gb4</p>
+        </div>
+        <div class="sheet-mark">Tenor sax · written pitch</div>
+      </div>
+      <div class="card-grid"><article class="card">
+    <header>
+      <div>
+        <h3>Bb3 / A#3</h3>
+        <p>Low Bb</p>
+      </div>
+      <div class="concert">실음 Ab2</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="Bb3 / A#3 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="57" x2="91" y2="57" class="ledger"/>
+    <text x="47" y="65.5" class="accidental">b</text>
+    <ellipse cx="74" cy="60.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 60.5)"/>
+    <line x1="81.2" y1="60.5" x2="81.2" y2="29.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key active"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key active"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key active"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 + low Bb | RH 123 + low C</div>
+    <div class="note">저음 B-flat</div>
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>B3 / Cb4</h3>
+        <p>Low B</p>
+      </div>
+      <div class="concert">실음 A2</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="B3 / Cb4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="57" x2="91" y2="57" class="ledger"/>
+    
+    <ellipse cx="74" cy="60.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 60.5)"/>
+    <line x1="81.2" y1="60.5" x2="81.2" y2="29.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key active"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key active"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key active"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 + low B | RH 123 + low C</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>C4 / B#3</h3>
+        <p>Low C</p>
+      </div>
+      <div class="concert">실음 Bb2</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="C4 / B#3 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="57" x2="91" y2="57" class="ledger"/>
+    
+    <ellipse cx="74" cy="57" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 57)"/>
+    <line x1="81.2" y1="57" x2="81.2" y2="26" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key active"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key active"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 | RH 123 + low C</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>C#4 / Db4</h3>
+        <p>Low C#</p>
+      </div>
+      <div class="concert">실음 B2</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="C#4 / Db4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="57" x2="91" y2="57" class="ledger"/>
+    <text x="47" y="62" class="accidental">#</text>
+    <ellipse cx="74" cy="57" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 57)"/>
+    <line x1="81.2" y1="57" x2="81.2" y2="26" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key active"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key active"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key active"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 + low C# | RH 123 + low C</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>D4</h3>
+        <p>Low D</p>
+      </div>
+      <div class="concert">실음 C3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="D4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="53.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 53.5)"/>
+    <line x1="81.2" y1="53.5" x2="81.2" y2="22.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key active"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 | RH 123</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>Eb4 / D#4</h3>
+        <p>Low Eb</p>
+      </div>
+      <div class="concert">실음 Db3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="Eb4 / D#4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    <text x="47" y="55" class="accidental">b</text>
+    <ellipse cx="74" cy="50" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 50)"/>
+    <line x1="81.2" y1="50" x2="81.2" y2="19" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key active"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key active"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 | RH 123 + low Eb</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>E4 / Fb4</h3>
+        <p>Low E</p>
+      </div>
+      <div class="concert">실음 D3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="E4 / Fb4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="50" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 50)"/>
+    <line x1="81.2" y1="50" x2="81.2" y2="19" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 | RH 12</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>F4 / E#4</h3>
+        <p>Low F</p>
+      </div>
+      <div class="concert">실음 Eb3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="F4 / E#4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="46.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 46.5)"/>
+    <line x1="81.2" y1="46.5" x2="81.2" y2="15.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 | RH 1</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>F#4 / Gb4</h3>
+        <p>Low F#</p>
+      </div>
+      <div class="concert">실음 E3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="F#4 / Gb4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    <text x="47" y="51.5" class="accidental">#</text>
+    <ellipse cx="74" cy="46.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 46.5)"/>
+    <line x1="81.2" y1="46.5" x2="81.2" y2="15.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 | RH 2</div>
+    <div class="note">Alt: LH123 | RH1 + trF#</div>
+  </article></div>
+    </section><section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>2. First Register</h2>
+          <p>Written G4-Eb5</p>
+        </div>
+        <div class="sheet-mark">Tenor sax · written pitch</div>
+      </div>
+      <div class="card-grid"><article class="card">
+    <header>
+      <div>
+        <h3>G4</h3>
+        <p>G</p>
+      </div>
+      <div class="concert">실음 F3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="G4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="43" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 43)"/>
+    <line x1="81.2" y1="43" x2="81.2" y2="12" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 | open RH</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>G#4 / Ab4</h3>
+        <p>G#</p>
+      </div>
+      <div class="concert">실음 Gb3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="G#4 / Ab4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    <text x="47" y="48" class="accidental">#</text>
+    <ellipse cx="74" cy="43" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 43)"/>
+    <line x1="81.2" y1="43" x2="81.2" y2="12" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key active"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 123 + G# | open RH</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>A4</h3>
+        <p>A</p>
+      </div>
+      <div class="concert">실음 G3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="A4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="39.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 39.5)"/>
+    <line x1="81.2" y1="39.5" x2="81.2" y2="8.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 12 | open RH</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>Bb4 / A#4</h3>
+        <p>Bb</p>
+      </div>
+      <div class="concert">실음 Ab3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="Bb4 / A#4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    <text x="47" y="41" class="accidental">b</text>
+    <ellipse cx="74" cy="36" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 36)"/>
+    <line x1="81.2" y1="36" x2="81.2" y2="5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key active"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 1 + side Bb</div>
+    <div class="note">Alt: LH1 + Bis Bb</div>
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>B4 / Cb5</h3>
+        <p>B</p>
+      </div>
+      <div class="concert">실음 A3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="B4 / Cb5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="36" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 36)"/>
+    <line x1="81.2" y1="36" x2="81.2" y2="5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 1 | open RH</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>C5 / B#4</h3>
+        <p>C</p>
+      </div>
+      <div class="concert">실음 Bb3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="C5 / B#4 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="32.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 32.5)"/>
+    <line x1="66.8" y1="32.5" x2="66.8" y2="63.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">LH 2 | open RH</div>
+    <div class="note">Alt: LH1 + side C</div>
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>C#5 / Db5</h3>
+        <p>C#</p>
+      </div>
+      <div class="concert">실음 B3</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="C#5 / Db5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    <text x="47" y="37.5" class="accidental">#</text>
+    <ellipse cx="74" cy="32.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 32.5)"/>
+    <line x1="66.8" y1="32.5" x2="66.8" y2="63.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">Open</div>
+    <div class="note">중간 C#</div>
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>D5</h3>
+        <p>D + octave</p>
+      </div>
+      <div class="concert">실음 C4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="D5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="29" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 29)"/>
+    <line x1="66.8" y1="29" x2="66.8" y2="60" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key active"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH 123 | RH 123</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>Eb5 / D#5</h3>
+        <p>Eb + octave</p>
+      </div>
+      <div class="concert">실음 Db4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="Eb5 / D#5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    <text x="47" y="30.5" class="accidental">b</text>
+    <ellipse cx="74" cy="25.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 25.5)"/>
+    <line x1="66.8" y1="25.5" x2="66.8" y2="56.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key active"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key active"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH 123 | RH 123 + low Eb</div>
+    
+  </article></div>
+    </section><section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>3. Octave-Key Register</h2>
+          <p>Written E5-C6</p>
+        </div>
+        <div class="sheet-mark">Tenor sax · written pitch</div>
+      </div>
+      <div class="card-grid"><article class="card">
+    <header>
+      <div>
+        <h3>E5 / Fb5</h3>
+        <p>E + octave</p>
+      </div>
+      <div class="concert">실음 D4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="E5 / Fb5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="25.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 25.5)"/>
+    <line x1="66.8" y1="25.5" x2="66.8" y2="56.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH 123 | RH 12</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>F5 / E#5</h3>
+        <p>F + octave</p>
+      </div>
+      <div class="concert">실음 Eb4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="F5 / E#5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="22" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 22)"/>
+    <line x1="66.8" y1="22" x2="66.8" y2="53" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key active"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH 123 | RH 1</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>F#5 / Gb5</h3>
+        <p>F# + octave</p>
+      </div>
+      <div class="concert">실음 E4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="F#5 / Gb5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    <text x="47" y="27" class="accidental">#</text>
+    <ellipse cx="74" cy="22" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 22)"/>
+    <line x1="66.8" y1="22" x2="66.8" y2="53" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key active"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH 123 | RH 2</div>
+    <div class="note">Alt: OK + LH123 | RH1 + trF#</div>
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>G5</h3>
+        <p>G + octave</p>
+      </div>
+      <div class="concert">실음 F4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="G5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    
+    <ellipse cx="74" cy="18.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 18.5)"/>
+    <line x1="66.8" y1="18.5" x2="66.8" y2="49.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH 123 | open RH</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>G#5 / Ab5</h3>
+        <p>G# + octave</p>
+      </div>
+      <div class="concert">실음 Gb4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="G#5 / Ab5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/>
+    <text x="47" y="23.5" class="accidental">#</text>
+    <ellipse cx="74" cy="18.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 18.5)"/>
+    <line x1="66.8" y1="18.5" x2="66.8" y2="49.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key active"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key active"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH 123 + G# | open RH</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>A5</h3>
+        <p>A + octave</p>
+      </div>
+      <div class="concert">실음 G4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="A5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/>
+    
+    <ellipse cx="74" cy="15" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 15)"/>
+    <line x1="66.8" y1="15" x2="66.8" y2="46" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH 12 | open RH</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>Bb5 / A#5</h3>
+        <p>Bb + octave</p>
+      </div>
+      <div class="concert">실음 Ab4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="Bb5 / A#5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/>
+    <text x="47" y="16.5" class="accidental">b</text>
+    <ellipse cx="74" cy="11.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 11.5)"/>
+    <line x1="66.8" y1="11.5" x2="66.8" y2="42.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key active"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH1 + side Bb</div>
+    <div class="note">Alt: OK + LH1 + Bis Bb</div>
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>B5 / Cb6</h3>
+        <p>B + octave</p>
+      </div>
+      <div class="concert">실음 A4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="B5 / Cb6 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/>
+    
+    <ellipse cx="74" cy="11.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 11.5)"/>
+    <line x1="66.8" y1="11.5" x2="66.8" y2="42.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key active"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH1 | open RH</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>C6 / B#5</h3>
+        <p>C + octave</p>
+      </div>
+      <div class="concert">실음 Bb4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="C6 / B#5 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/><line x1="57" y1="8" x2="91" y2="8" class="ledger"/>
+    
+    <ellipse cx="74" cy="8" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 8)"/>
+    <line x1="66.8" y1="8" x2="66.8" y2="39" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key active"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + LH2 | open RH</div>
+    <div class="note">Alt: OK + LH1 + side C</div>
+  </article></div>
+    </section><section class="sheet">
+      <div class="sheet-head">
+        <div>
+          <h2>4. Top Register</h2>
+          <p>Written C#6-F#6</p>
+        </div>
+        <div class="sheet-mark">Tenor sax · written pitch</div>
+      </div>
+      <div class="card-grid"><article class="card">
+    <header>
+      <div>
+        <h3>C#6 / Db6</h3>
+        <p>C# + octave</p>
+      </div>
+      <div class="concert">실음 B4</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="C#6 / Db6 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/><line x1="57" y1="8" x2="91" y2="8" class="ledger"/>
+    <text x="47" y="13" class="accidental">#</text>
+    <ellipse cx="74" cy="8" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 8)"/>
+    <line x1="66.8" y1="8" x2="66.8" y2="39" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK only</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>D6</h3>
+        <p>Palm D</p>
+      </div>
+      <div class="concert">실음 C5</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="D6 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/><line x1="57" y1="8" x2="91" y2="8" class="ledger"/>
+    
+    <ellipse cx="74" cy="4.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 4.5)"/>
+    <line x1="66.8" y1="4.5" x2="66.8" y2="35.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key active"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + palm D</div>
+    <div class="note">3옥타브 D</div>
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>Eb6 / D#6</h3>
+        <p>Palm Eb</p>
+      </div>
+      <div class="concert">실음 Db5</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="Eb6 / D#6 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/><line x1="57" y1="8" x2="91" y2="8" class="ledger"/><line x1="57" y1="1" x2="91" y2="1" class="ledger"/>
+    <text x="47" y="6" class="accidental">b</text>
+    <ellipse cx="74" cy="1" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 1)"/>
+    <line x1="66.8" y1="1" x2="66.8" y2="32" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key active"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key active"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + palm D + palm Eb</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>E6 / Fb6</h3>
+        <p>High E</p>
+      </div>
+      <div class="concert">실음 D5</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="E6 / Fb6 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/><line x1="57" y1="8" x2="91" y2="8" class="ledger"/><line x1="57" y1="1" x2="91" y2="1" class="ledger"/>
+    
+    <ellipse cx="74" cy="1" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 1)"/>
+    <line x1="66.8" y1="1" x2="66.8" y2="32" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key active"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key active"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key active"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + palm D/Eb + side E</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>F6 / E#6</h3>
+        <p>High F</p>
+      </div>
+      <div class="concert">실음 Eb5</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="F6 / E#6 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/><line x1="57" y1="8" x2="91" y2="8" class="ledger"/><line x1="57" y1="1" x2="91" y2="1" class="ledger"/>
+    
+    <ellipse cx="74" cy="-2.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 -2.5)"/>
+    <line x1="66.8" y1="-2.5" x2="66.8" y2="28.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key active"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key active"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key active"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key active"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + palm D/Eb/F + side E</div>
+    
+  </article><article class="card">
+    <header>
+      <div>
+        <h3>F#6 / Gb6</h3>
+        <p>High F#</p>
+      </div>
+      <div class="concert">실음 E5</div>
+    </header>
+    <div class="visuals">
+      <svg class="staff" viewBox="0 0 132 72" role="img" aria-label="F#6 / Gb6 staff">
+    <line x1="18" y1="50" x2="122" y2="50" class="staff-line"/><line x1="18" y1="43" x2="122" y2="43" class="staff-line"/><line x1="18" y1="36" x2="122" y2="36" class="staff-line"/><line x1="18" y1="29" x2="122" y2="29" class="staff-line"/><line x1="18" y1="22" x2="122" y2="22" class="staff-line"/><line x1="57" y1="15" x2="91" y2="15" class="ledger"/><line x1="57" y1="8" x2="91" y2="8" class="ledger"/><line x1="57" y1="1" x2="91" y2="1" class="ledger"/>
+    <text x="47" y="2.5" class="accidental">#</text>
+    <ellipse cx="74" cy="-2.5" rx="9" ry="6.5" class="notehead" transform="rotate(-18 74 -2.5)"/>
+    <line x1="66.8" y1="-2.5" x2="66.8" y2="28.5" class="stem"/>
+  </svg>
+      <svg class="diagram" viewBox="0 0 224 292" role="img" aria-label="pressed keys">
+    <line x1="94" y1="45" x2="94" y2="238" class="body-line"/>
+    <line x1="78" y1="155" x2="110" y2="155" class="hand-sep"/>
+    <text x="94" y="49" class="hand-label">LH</text>
+    <text x="94" y="160" class="hand-label">RH</text>
+    <g class="key active"><rect x="90" y="24" width="38" height="18" rx="7"/><text x="109" y="36">OK</text></g><g class="key active"><rect x="18" y="72" width="28" height="15" rx="7"/><text x="32" y="82.5">D</text></g><g class="key active"><rect x="18" y="93" width="28" height="15" rx="7"/><text x="32" y="103.5">Eb</text></g><g class="key active"><rect x="18" y="114" width="28" height="15" rx="7"/><text x="32" y="124.5">F</text></g><g class="key"><circle cx="94" cy="64" r="6"/><text x="94" y="67">Ff</text></g><g class="key"><circle cx="94" cy="88" r="9"/><text x="94" y="91">1</text></g><g class="key"><circle cx="118" cy="104" r="5"/><text x="118" y="107">Bb</text></g><g class="key"><circle cx="94" cy="112" r="9"/><text x="94" y="115">2</text></g><g class="key"><circle cx="94" cy="136" r="9"/><text x="94" y="139">3</text></g><g class="key"><rect x="42" y="145" width="30" height="15" rx="7"/><text x="57" y="155.5">G#</text></g><g class="key"><rect x="42" y="165" width="30" height="15" rx="7"/><text x="57" y="175.5">C#</text></g><g class="key"><rect x="42" y="185" width="30" height="15" rx="7"/><text x="57" y="195.5">B</text></g><g class="key"><rect x="42" y="205" width="30" height="15" rx="7"/><text x="57" y="215.5">Bb</text></g><g class="key active"><rect x="142" y="148" width="28" height="15" rx="7"/><text x="156" y="158.5">E</text></g><g class="key"><rect x="142" y="168" width="28" height="15" rx="7"/><text x="156" y="178.5">C</text></g><g class="key"><rect x="142" y="188" width="28" height="15" rx="7"/><text x="156" y="198.5">Bb</text></g><g class="key active"><rect x="174" y="168" width="31" height="15" rx="7"/><text x="189.5" y="178.5">hiF#</text></g><g class="key"><circle cx="94" cy="174" r="9"/><text x="94" y="177">1</text></g><g class="key"><circle cx="118" cy="190" r="5"/><text x="118" y="193">trF#</text></g><g class="key"><circle cx="94" cy="198" r="9"/><text x="94" y="201">2</text></g><g class="key"><circle cx="94" cy="222" r="9"/><text x="94" y="225">3</text></g><g class="key"><rect x="118" y="237" width="30" height="15" rx="7"/><text x="133" y="247.5">Eb</text></g><g class="key"><rect x="118" y="257" width="30" height="15" rx="7"/><text x="133" y="267.5">C</text></g>
+  </svg>
+    </div>
+    <div class="formula">OK + palm D/Eb/F + side E + high F# key</div>
+    <div class="note">high F# key 장착 모델</div>
+  </article></div>
+    </section>
+    <section class="sources">
+      <h2>검수 기준</h2>
+      <p>표준 운지의 악기 공통성, 키 명칭, palm/side key 조합을 아래 자료로 대조했습니다.</p>
+      <ul>
+        <li><a href="https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play002.html">Yamaha Musical Instrument Guide: Saxophone fingering</a></li>
+        <li><a href="https://www.wfg.woodwind.org/sax/sax_fing.html">The Woodwind Fingering Guide: Fingering Scheme for Saxophone</a></li>
+        <li><a href="https://www.wfg.woodwind.org/sax/sax_alt_2.html">The Woodwind Fingering Guide: Second Octave Saxophone Fingerings</a></li>
+        <li><a href="https://tamingthesaxophone.com/lessons/beginners/fingering-chart">Taming The Saxophone: Fingering Charts</a></li>
+        <li><a href="https://saxschoolonline.com/articles/high-f-on-saxophone-a-beginners-guide/">Sax School: High F on Saxophone</a></li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
