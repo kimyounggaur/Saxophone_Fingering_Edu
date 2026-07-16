@@ -515,6 +515,21 @@ function validatePoseTable(keySpecs, fingerMap, handGeometry) {
   }).filter((result) => result.error > 1.5);
 }
 
+function validateNotePoses(noteSpecs, keySpecs, fingerMap, handGeometry) {
+  const errors = [];
+  noteSpecs.forEach((note) => {
+    const unknown = note.pressed.filter((keyId) => !fingerMap[keyId]);
+    if (unknown.length) errors.push(`${note.label}: 알 수 없는 키 ${unknown.join(", ")}`);
+    const frame = derivePoses(note.pressed, fingerMap, keySpecs, handGeometry);
+    note.pressed.forEach((keyId) => {
+      const contact = frame.contacts[keyId];
+      if (!contact) errors.push(`${note.label}: ${keyId} 접점 없음`);
+      else if (contact.error > 1.5) errors.push(`${note.label}: ${keyId} 접점 오차 ${contact.error.toFixed(2)}`);
+    });
+  });
+  return errors;
+}
+
 function accidental(label) {
   const pitch = primaryPitch(label);
   if (pitch.includes("#")) return "#";
@@ -1323,6 +1338,8 @@ async function main() {
     console.table(poseErrors);
     throw new Error(`손끝-키 접점 오차가 1.5를 넘는 키가 ${poseErrors.length}개입니다.`);
   }
+  const notePoseErrors = validateNotePoses(notes, keys, FINGER_MAP, HAND_GEOMETRY);
+  if (notePoseErrors.length) throw new Error(`33음 포즈 검증 실패:\n${notePoseErrors.join("\n")}`);
   writeFileSync(svgPath, makePosterSvg(), "utf8");
   writeFileSync(htmlPath, makeHtml(), "utf8");
   writeFileSync(animationHtmlPath, makeAnimationHtml(), "utf8");
