@@ -4,3 +4,8 @@ node_modules/
 .playwright-cli/
 output/
 tmp/
+.next/
+.vinext/
+dist/
+.wrangler/
+public/site/
