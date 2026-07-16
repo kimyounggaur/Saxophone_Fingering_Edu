@@ -764,6 +764,7 @@ function makeHtml() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
   <title>${esc(chartConfig.englishName)} Fingering Chart / ${esc(chartConfig.koreanName)} 운지표</title>
   <style>${htmlCss()}</style>
 </head>
@@ -806,6 +807,7 @@ function makeHandPreviewHtml() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
   <title>Hand Rig Preview / 손 SVG 리그 프리뷰</title>
   <style>
     :root{--paper:#f8fafc;--ink:#0f172a;--line:#cbd5e1;--accent:#0f766e}
@@ -944,6 +946,7 @@ function makeAnimationHtml() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
   <title>Saxophone Fingering Animation / 색소폰 운지 애니메이션</title>
   <style>${animationCss()}</style>
 </head>
@@ -1223,7 +1226,7 @@ function animationRuntime() {
     ["lh", "rh"].forEach((side) => {
       const used = note.pressed.map((keyId) => DATA.fingerMap[keyId]).filter((mapping) => mapping && mapping.hand === side).map((mapping) => FINGER_KO[mapping.finger]);
       const fingers = [...new Set(used)].join("·") || "누르는 손가락 없음";
-      document.querySelector('[data-hand="' + side + '"]')?.setAttribute("aria-label", (side === "lh" ? "왼손 " : "오른손 ") + fingers + "로 누르는 " + note.solfege + " (" + note.label + ") 운지");
+      document.querySelector('[data-hand="' + side + '"]')?.setAttribute("aria-label", (side === "lh" ? "왼손 " : "오른손 ") + fingers + "를 사용해 누르는 " + note.solfege + " (" + note.label + ") 운지");
     });
   }
 
