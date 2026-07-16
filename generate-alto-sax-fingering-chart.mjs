@@ -8,6 +8,8 @@ const bundledNodeModules =
   "C:/Users/kimyo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules";
 
 function findPlaywrightPackageJson() {
+  const local = resolve(process.cwd(), "node_modules", "playwright", "package.json");
+  if (existsSync(local)) return local;
   const direct = join(bundledNodeModules, "playwright", "package.json");
   const pnpmRoot = join(bundledNodeModules, ".pnpm");
   if (existsSync(pnpmRoot)) {
@@ -22,10 +24,22 @@ function findPlaywrightPackageJson() {
   return direct;
 }
 
-const require = createRequire(findPlaywrightPackageJson());
-const { chromium } = require("playwright");
+function loadChromium() {
+  const localRequire = createRequire(import.meta.url);
+  try {
+    return localRequire("playwright").chromium;
+  } catch {
+    const packageJson = findPlaywrightPackageJson();
+    if (!existsSync(packageJson)) {
+      throw new Error("Playwright를 찾지 못했습니다. 이 폴더에서 npm install playwright를 실행해 주세요.");
+    }
+    return createRequire(packageJson)("playwright").chromium;
+  }
+}
 
-const requestedChartKind = process.argv[2] || "alto";
+const cliArgs = process.argv.slice(2);
+const requestedChartKind = cliArgs.find((arg) => !arg.startsWith("--")) || "alto";
+const skipPdf = cliArgs.includes("--no-pdf");
 const chartConfigs = {
   alto: {
     prefix: "alto",
@@ -831,19 +845,23 @@ async function main() {
   writeFileSync(animationHtmlPath, makeAnimationHtml(), "utf8");
   writeFileSync(animationSvgPath, makeAnimationSvg(), "utf8");
 
-  const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
-  await page.goto(pathToFileURL(htmlPath).href, { waitUntil: "networkidle" });
-  await page.pdf({
-    path: pdfPath,
-    format: "A4",
-    landscape: true,
-    printBackground: true,
-    margin: { top: "8mm", right: "8mm", bottom: "8mm", left: "8mm" },
-  });
-  await browser.close();
+  if (!skipPdf) {
+    const chromium = loadChromium();
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.goto(pathToFileURL(htmlPath).href, { waitUntil: "networkidle" });
+    await page.pdf({
+      path: pdfPath,
+      format: "A4",
+      landscape: true,
+      printBackground: true,
+      margin: { top: "8mm", right: "8mm", bottom: "8mm", left: "8mm" },
+    });
+    await browser.close();
+  }
 
-  console.log(`Wrote:\n- ${svgPath}\n- ${htmlPath}\n- ${pdfPath}\n- ${animationHtmlPath}\n- ${animationSvgPath}`);
+  const outputs = [svgPath, htmlPath, ...(skipPdf ? [] : [pdfPath]), animationHtmlPath, animationSvgPath];
+  console.log(`Wrote:\n- ${outputs.join("\n- ")}${skipPdf ? "\n(PDF skipped with --no-pdf)" : ""}`);
 }
 
 main().catch((error) => {
