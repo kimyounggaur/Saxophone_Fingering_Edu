@@ -251,6 +251,10 @@ function solfegeName(label) {
   return `${syllables[match[1]]}${accidentalMark}${match[3]}`;
 }
 
+function unicodePitchLabel(label) {
+  return String(label).replaceAll("#", "♯").replace(/([A-G])b/g, "$1♭");
+}
+
 function derivePoses(pressedInput, fingerMap, keySpecs, handGeometry) {
   const fingerNames = ["thumb", "index", "middle", "ring", "pinky"];
   const pressed = [...new Set((pressedInput || []).filter((keyId) => fingerMap[keyId]))];
@@ -573,12 +577,12 @@ function staffSvg(note, scale = 1) {
     lines.push(`<line x1="${cx - 17 * scale}" y1="${ly}" x2="${cx + 17 * scale}" y2="${ly}" class="ledger"/>`);
   }
   const acc = accidental(note.label);
-  const accText = acc ? `<text x="${cx - 27 * scale}" y="${y + 5 * scale}" class="accidental">${acc}</text>` : "";
+  const accText = acc ? `<text x="${cx - 27 * scale}" y="${y + 5 * scale}" class="accidental">${acc === "#" ? "♯" : "♭"}</text>` : "";
   const stemUp = y >= (staffTop + bottomY) / 2;
   const stemX = stemUp ? cx + rx * 0.8 : cx - rx * 0.8;
   const stemY2 = stemUp ? y - 31 * scale : y + 31 * scale;
   const stem = `<line x1="${stemX}" y1="${y}" x2="${stemX}" y2="${stemY2}" class="stem"/>`;
-  return `<svg class="staff" viewBox="0 ${-14 * scale} ${width} ${height}" role="img" aria-label="${esc(solfegeName(note.label))} (${esc(note.label)}) staff">
+  return `<svg class="staff" viewBox="0 ${-14 * scale} ${width} ${height}" role="img" aria-label="${esc(solfegeName(note.label))} (${esc(unicodePitchLabel(note.label))}) staff">
     ${lines.join("")}
     ${accText}
     <ellipse cx="${cx}" cy="${y}" rx="${rx}" ry="${ry}" class="notehead" transform="rotate(-18 ${cx} ${y})"/>
@@ -672,10 +676,10 @@ function htmlCard(note) {
   return `<article class="card">
     <header>
       <div>
-        <h3>${esc(note.solfege)} <small>(${esc(note.label)})</small></h3>
+        <h3>${esc(note.solfege)} <small>(${esc(unicodePitchLabel(note.label))})</small></h3>
         <p>${esc(note.short)}</p>
       </div>
-      <div class="concert">실음 ${esc(solfegeName(concert))} (${esc(concert)})</div>
+      <div class="concert">실음 ${esc(solfegeName(concert))} (${esc(unicodePitchLabel(concert))})</div>
     </header>
     <div class="visuals">
       ${staffSvg(note)}
@@ -691,8 +695,8 @@ function posterCard(note, x, y) {
   const concert = pitchClassName(note.midi - chartConfig.transpositionSemitones);
   return `<g transform="translate(${x},${y})" class="poster-card">
     <rect width="620" height="260" rx="14" class="poster-card-bg"/>
-    <text x="24" y="40" class="poster-note">${esc(note.solfege)} <tspan class="poster-note-en">(${esc(note.label)})</tspan></text>
-    <text x="24" y="66" class="poster-sub">${esc(note.short)} · 실음 ${esc(solfegeName(concert))} (${esc(concert)})</text>
+    <text x="24" y="40" class="poster-note">${esc(note.solfege)} <tspan class="poster-note-en">(${esc(unicodePitchLabel(note.label))})</tspan></text>
+    <text x="24" y="66" class="poster-sub">${esc(note.short)} · 실음 ${esc(solfegeName(concert))} (${esc(unicodePitchLabel(concert))})</text>
     <g transform="translate(16,76)">${staffSvg(note, 1.08)}</g>
     <g transform="translate(165,48)">${compactHandDiagramSvg(note.pressed, 0.72)}</g>
     <g transform="translate(390,48)">${diagramSvg(note.pressed, 0.72, "diagram poster-diagram")}</g>
@@ -887,7 +891,7 @@ function makeHandPreviewHtml() {
       }); sliders.append(box);
     }));
   };
-  DATA.notes.forEach((note,index)=>{const option=document.createElement("option");option.value=String(index);option.textContent=note.solfege+' ('+note.label+') · '+note.short;select.append(option);});
+  DATA.notes.forEach((note,index)=>{const option=document.createElement("option");option.value=String(index);option.textContent=note.solfege+' ('+note.label.replaceAll('#','♯').replace(/([A-G])b/g,'$1♭')+') · '+note.short;select.append(option);});
   select.addEventListener("change",()=>{noteIndex=Number(select.value);frame=derivePoses(DATA.notes[noteIndex].pressed,DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
   document.getElementById("preset-rest").addEventListener("click",()=>{frame=derivePoses([],DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
   document.getElementById("preset-press").addEventListener("click",()=>{frame=derivePoses(DATA.notes[noteIndex].pressed,DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
@@ -1018,6 +1022,7 @@ function animationRuntime() {
   const buildHand = ${buildHand.toString()};
   const derivePoses = ${derivePoses.toString()};
   const solfegeName = ${solfegeName.toString()};
+  const unicodePitchLabel = ${unicodePitchLabel.toString()};
   const NS = "http://www.w3.org/2000/svg";
   const FINGER_NAMES = ["thumb", "index", "middle", "ring", "pinky"];
   const FINGER_KO = { thumb: "엄지", index: "검지", middle: "중지", ring: "약지", pinky: "소지", palm: "손바닥" };
@@ -1094,8 +1099,8 @@ function animationRuntime() {
   }
 
   function formatNote(note, full = true) {
-    const letter = full ? note.label : primaryPitch(note.label);
-    return formatPitch(primaryPitch(note.label), note.solfege, noteState.notation, letter);
+    const letter = unicodePitchLabel(full ? note.label : primaryPitch(note.label));
+    return formatPitch(unicodePitchLabel(primaryPitch(note.label)), note.solfege, noteState.notation, letter);
   }
 
   function interpolateFrames(from, to, amount) {
@@ -1220,13 +1225,13 @@ function animationRuntime() {
     const concert = pitchClassName(note.midi - config.transpositionSemitones);
     setText("anim-instrument", config.englishName);
     setText("anim-note", formatNote(note, true));
-    setText("anim-concert", "실음 " + formatPitch(concert, solfegeName(concert), noteState.notation, concert));
+    setText("anim-concert", "실음 " + formatPitch(unicodePitchLabel(concert), solfegeName(concert), noteState.notation, unicodePitchLabel(concert)));
     setText("anim-formula", note.formula);
     setText("anim-active-count", note.pressed.length + " keys");
     ["lh", "rh"].forEach((side) => {
       const used = note.pressed.map((keyId) => DATA.fingerMap[keyId]).filter((mapping) => mapping && mapping.hand === side).map((mapping) => FINGER_KO[mapping.finger]);
       const fingers = [...new Set(used)].join("·") || "누르는 손가락 없음";
-      document.querySelector('[data-hand="' + side + '"]')?.setAttribute("aria-label", (side === "lh" ? "왼손 " : "오른손 ") + fingers + "를 사용해 누르는 " + note.solfege + " (" + note.label + ") 운지");
+      document.querySelector('[data-hand="' + side + '"]')?.setAttribute("aria-label", (side === "lh" ? "왼손 " : "오른손 ") + fingers + "를 사용해 누르는 " + note.solfege + " (" + unicodePitchLabel(note.label) + ") 운지");
     });
   }
 

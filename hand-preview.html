@@ -1913,7 +1913,7 @@
       }); sliders.append(box);
     }));
   };
-  DATA.notes.forEach((note,index)=>{const option=document.createElement("option");option.value=String(index);option.textContent=note.solfege+' ('+note.label+') · '+note.short;select.append(option);});
+  DATA.notes.forEach((note,index)=>{const option=document.createElement("option");option.value=String(index);option.textContent=note.solfege+' ('+note.label.replaceAll('#','♯').replace(/([A-G])b/g,'$1♭')+') · '+note.short;select.append(option);});
   select.addEventListener("change",()=>{noteIndex=Number(select.value);frame=derivePoses(DATA.notes[noteIndex].pressed,DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
   document.getElementById("preset-rest").addEventListener("click",()=>{frame=derivePoses([],DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
   document.getElementById("preset-press").addEventListener("click",()=>{frame=derivePoses(DATA.notes[noteIndex].pressed,DATA.fingerMap,DATA.keys,DATA.handGeometry);render(true);});
