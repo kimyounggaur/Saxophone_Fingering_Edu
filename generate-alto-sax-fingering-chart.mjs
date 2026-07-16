@@ -546,7 +546,7 @@ function naturalFromLabel(label) {
 
 function staffSvg(note, scale = 1) {
   const width = 132 * scale;
-  const height = 72 * scale;
+  const height = 86 * scale;
   const left = 18 * scale;
   const right = 122 * scale;
   const bottomY = 50 * scale;
@@ -578,7 +578,7 @@ function staffSvg(note, scale = 1) {
   const stemX = stemUp ? cx + rx * 0.8 : cx - rx * 0.8;
   const stemY2 = stemUp ? y - 31 * scale : y + 31 * scale;
   const stem = `<line x1="${stemX}" y1="${y}" x2="${stemX}" y2="${stemY2}" class="stem"/>`;
-  return `<svg class="staff" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(note.label)} staff">
+  return `<svg class="staff" viewBox="0 ${-14 * scale} ${width} ${height}" role="img" aria-label="${esc(solfegeName(note.label))} (${esc(note.label)}) staff">
     ${lines.join("")}
     ${accText}
     <ellipse cx="${cx}" cy="${y}" rx="${rx}" ry="${ry}" class="notehead" transform="rotate(-18 ${cx} ${y})"/>
@@ -586,10 +586,8 @@ function staffSvg(note, scale = 1) {
   </svg>`;
 }
 
-function diagramSvg(pressed, scale = 1, className = "diagram") {
+function keyLayerMarkup(pressed, scale = 1) {
   const pressedSet = new Set(pressed);
-  const width = 224 * scale;
-  const height = 292 * scale;
   const body = keys
     .map((key) => {
       const active = pressedSet.has(key.id);
@@ -600,13 +598,73 @@ function diagramSvg(pressed, scale = 1, className = "diagram") {
       return `<g class="${cls}"><rect x="${key.x * scale}" y="${key.y * scale}" width="${key.w * scale}" height="${key.h * scale}" rx="${7 * scale}"/><text x="${(key.x + key.w / 2) * scale}" y="${(key.y + key.h / 2 + 3) * scale}">${esc(key.label)}</text></g>`;
     })
     .join("");
-  return `<svg class="${className}" viewBox="0 0 ${width} ${height}" role="img" aria-label="pressed keys">
+  return `
     <line x1="${94 * scale}" y1="${45 * scale}" x2="${94 * scale}" y2="${238 * scale}" class="body-line"/>
     <line x1="${78 * scale}" y1="${155 * scale}" x2="${110 * scale}" y2="${155 * scale}" class="hand-sep"/>
     <text x="${94 * scale}" y="${49 * scale}" class="hand-label">LH</text>
     <text x="${94 * scale}" y="${160 * scale}" class="hand-label">RH</text>
-    ${body}
+    ${body}`;
+}
+
+function diagramSvg(pressed, scale = 1, className = "diagram") {
+  const width = 224 * scale;
+  const height = 292 * scale;
+  return `<svg class="${className}" viewBox="0 0 ${width} ${height}" role="img" aria-label="눌린 색소폰 키">
+    ${keyLayerMarkup(pressed, scale)}
   </svg>`;
+}
+
+function handDiagramSvg(pressed, scale = 1, idPrefix = "hand-diagram") {
+  const width = 224 * scale;
+  const height = 292 * scale;
+  const frame = derivePoses(pressed, FINGER_MAP, keys, HAND_GEOMETRY);
+  const contacts = Object.entries(frame.contacts).map(([keyId, point]) => {
+    const key = keys.find((candidate) => candidate.id === keyId);
+    const label = key?.label || keyId;
+    const tagWidth = Math.max(14, label.length * 4.6 + 7);
+    return `<g class="static-contact" transform="translate(${point.x} ${point.y})">
+      <circle r="2.8" class="hand-contact-dot"/>
+      <g transform="translate(0 -10)"><rect x="${-tagWidth / 2}" y="-5" width="${tagWidth}" height="9" rx="3.5" class="hand-contact-tag"/><text x="0" y="0" class="hand-contact-label">${esc(label)}</text></g>
+    </g>`;
+  }).join("");
+  const description = pressed.length ? pressed.map((keyId) => keys.find((key) => key.id === keyId)?.label || keyId).join(", ") : "열린 운지";
+  return `<svg class="hand-diagram" viewBox="0 0 ${width} ${height}" role="img" aria-label="양손 운지: ${esc(description)}">
+    <g transform="scale(${scale})">
+      ${keyLayerMarkup(pressed, 1)}
+      ${buildHand("lh", frame.lh, `${idPrefix}-lh`)}
+      ${buildHand("rh", frame.rh, `${idPrefix}-rh`)}
+      <g class="static-contact-layer">${contacts}</g>
+    </g>
+  </svg>`;
+}
+
+function compactHandDiagramSvg(pressed, scale = 1) {
+  const width = 224 * scale;
+  const height = 292 * scale;
+  const frame = derivePoses(pressed, FINGER_MAP, keys, HAND_GEOMETRY);
+  const pointAt = (point, angle, length) => ({ x: point.x + Math.cos(angle) * length, y: point.y + Math.sin(angle) * length });
+  const compactHand = (side) => {
+    const hand = frame[side];
+    const fingers = ["thumb", "index", "middle", "ring", "pinky"].map((name) => {
+      const finger = hand.fingers[name];
+      const [l1, l2, l3] = finger.lengths;
+      const p0 = finger.pivot;
+      const p1 = pointAt(p0, finger.angles.mcp, l1);
+      const p2 = pointAt(p1, finger.angles.pip, l2);
+      const tip = pointAt(p2, finger.angles.dip, l3);
+      const [w1, w2, w3] = finger.widths;
+      const end = l3 ? tip : p2;
+      return `<g class="compact-finger${finger.active ? " is-pressed" : ""}">
+        <line x1="${p0.x.toFixed(1)}" y1="${p0.y.toFixed(1)}" x2="${p1.x.toFixed(1)}" y2="${p1.y.toFixed(1)}" stroke-width="${w1}"/>
+        <line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke-width="${w2}"/>
+        ${l3 ? `<line x1="${p2.x.toFixed(1)}" y1="${p2.y.toFixed(1)}" x2="${tip.x.toFixed(1)}" y2="${tip.y.toFixed(1)}" stroke-width="${w3}"/>` : ""}
+        <ellipse class="compact-nail" cx="${end.x.toFixed(1)}" cy="${end.y.toFixed(1)}" rx="${Math.max(2.2, (w3 || w2) * 0.4).toFixed(1)}" ry="${Math.max(1.2, (w3 || w2) * 0.22).toFixed(1)}"/>
+      </g>`;
+    }).join("");
+    return `<g class="compact-hand" transform="translate(${hand.root.tx} ${hand.root.ty}) rotate(${hand.root.rotation} ${hand.root.cx} ${hand.root.cy})"><path class="compact-palm" d="${hand.palmPath}"/><path class="compact-webbing" d="${hand.webbingPath}"/>${fingers}</g>`;
+  };
+  const contacts = Object.values(frame.contacts).map((point) => `<circle class="hand-contact-dot" cx="${point.x}" cy="${point.y}" r="2.8"/>`).join("");
+  return `<svg class="hand-diagram compact-hand-diagram" viewBox="0 0 ${width} ${height}" role="img" aria-label="양손 운지 다이어그램"><g transform="scale(${scale})">${keyLayerMarkup(pressed, 1)}${compactHand("lh")}${compactHand("rh")}<g>${contacts}</g></g></svg>`;
 }
 
 function htmlCard(note) {
@@ -614,13 +672,14 @@ function htmlCard(note) {
   return `<article class="card">
     <header>
       <div>
-        <h3>${esc(note.label)}</h3>
+        <h3>${esc(note.solfege)} <small>(${esc(note.label)})</small></h3>
         <p>${esc(note.short)}</p>
       </div>
-      <div class="concert">실음 ${esc(concert)}</div>
+      <div class="concert">실음 ${esc(solfegeName(concert))} (${esc(concert)})</div>
     </header>
     <div class="visuals">
       ${staffSvg(note)}
+      ${handDiagramSvg(note.pressed, 1, `html-${note.midi}`)}
       ${diagramSvg(note.pressed)}
     </div>
     <div class="formula">${esc(note.formula)}</div>
@@ -631,25 +690,26 @@ function htmlCard(note) {
 function posterCard(note, x, y) {
   const concert = pitchClassName(note.midi - chartConfig.transpositionSemitones);
   return `<g transform="translate(${x},${y})" class="poster-card">
-    <rect width="500" height="230" rx="14" class="poster-card-bg"/>
-    <text x="24" y="44" class="poster-note">${esc(note.label)}</text>
-    <text x="24" y="72" class="poster-sub">${esc(note.short)} · 실음 ${esc(concert)}</text>
-    <g transform="translate(20,82)">${staffSvg(note, 1.35)}</g>
-    <g transform="translate(244,0)">${diagramSvg(note.pressed, 0.74, "diagram poster-diagram")}</g>
-    <text x="24" y="204" class="poster-formula">${esc(note.formula)}</text>
-    ${note.note ? `<text x="24" y="222" class="poster-foot">${esc(note.note)}</text>` : ""}
+    <rect width="620" height="260" rx="14" class="poster-card-bg"/>
+    <text x="24" y="40" class="poster-note">${esc(note.solfege)} <tspan class="poster-note-en">(${esc(note.label)})</tspan></text>
+    <text x="24" y="66" class="poster-sub">${esc(note.short)} · 실음 ${esc(solfegeName(concert))} (${esc(concert)})</text>
+    <g transform="translate(16,76)">${staffSvg(note, 1.08)}</g>
+    <g transform="translate(165,48)">${compactHandDiagramSvg(note.pressed, 0.72)}</g>
+    <g transform="translate(390,48)">${diagramSvg(note.pressed, 0.72, "diagram poster-diagram")}</g>
+    <text x="24" y="235" class="poster-formula">${esc(note.formula)}</text>
+    ${note.note ? `<text x="360" y="235" class="poster-foot">${esc(note.note)}</text>` : ""}
   </g>`;
 }
 
 function posterLegend(x, y) {
   return `<g transform="translate(${x},${y})" class="legend">
-    <rect width="1540" height="122" rx="18" class="legend-bg"/>
+    <rect width="1908" height="122" rx="18" class="legend-bg"/>
     <text x="26" y="38" class="legend-title">표기 기준</text>
     <g transform="translate(190,24)">
       <circle cx="18" cy="12" r="9" class="sample-filled"/><text x="38" y="17" class="legend-text">채움 = 누르는 키/닫는 키</text>
       <circle cx="258" cy="12" r="9" class="sample-open"/><text x="278" y="17" class="legend-text">빈 원 = 열림</text>
       <rect x="472" y="3" width="40" height="18" rx="9" class="sample-filled"/><text x="524" y="17" class="legend-text">OK = octave key</text>
-      <rect x="744" y="3" width="48" height="18" rx="9" class="sample-filled"/><text x="804" y="17" class="legend-text">palm/side/pinky keys는 라벨 그대로 누름</text>
+      <circle cx="754" cy="12" r="5" class="hand-contact-dot"/><text x="770" y="17" class="legend-text">접점 도트 + 태그 = 손 아래 눌린 키</text>
     </g>
     <text x="26" y="82" class="legend-note">${esc(chartConfig.koreanName)} 기보음 기준입니다. ${esc(chartConfig.transpositionText)}</text>
     <text x="26" y="108" class="legend-note">High F#는 high F# key가 있는 현대 악기 기준입니다. 없는 악기는 악기별 altissimo 대체운지가 필요합니다.</text>
@@ -657,8 +717,8 @@ function posterLegend(x, y) {
 }
 
 function makePosterSvg() {
-  const cardW = 500;
-  const cardH = 230;
+  const cardW = 620;
+  const cardH = 260;
   const gap = 24;
   const cols = 3;
   const margin = 60;
@@ -859,8 +919,9 @@ function makeAnimationStageSvg() {
       <text x="94" y="160" class="anim-hand-label">RH</text>
       <g id="anim-key-layer"></g>
       <g id="anim-finger-layer"></g>
+      <g id="anim-contact-layer"></g>
     </g>
-    <g class="readout" transform="translate(520 118)">
+    <g class="readout" transform="translate(520 118)" aria-live="polite" aria-atomic="true">
       <rect width="322" height="306" rx="18" class="readout-panel"/>
       <text x="24" y="48" id="anim-instrument" class="readout-kicker">Alto Saxophone</text>
       <text x="24" y="96" id="anim-note" class="readout-note">Bb3 / A#3</text>
@@ -872,7 +933,7 @@ function makeAnimationStageSvg() {
     </g>
     <g class="mini-legend" transform="translate(520 458)">
       <circle cx="14" cy="14" r="8" class="legend-pressed"/><text x="30" y="19">눌린 키</text>
-      <ellipse cx="142" cy="14" rx="15" ry="9" class="legend-finger"/><text x="166" y="19">손가락</text>
+      <path d="M128 18 C132 6 140 3 149 8 C156 12 157 20 151 24 C144 29 132 27 128 18 Z" class="legend-finger"/><ellipse cx="147" cy="12" rx="4" ry="2.3" class="legend-nail"/><text x="166" y="19">손가락 접점</text>
     </g>
   </svg>`;
 }
@@ -902,6 +963,14 @@ function makeAnimationHtml() {
           <label>
             <span>음</span>
             <select id="note-select"></select>
+          </label>
+          <label>
+            <span>표기</span>
+            <select id="notation-select">
+              <option value="solfege">계이름 (도레미)</option>
+              <option value="letter">음이름 (CDE)</option>
+              <option value="both" selected>병기</option>
+            </select>
           </label>
         </div>
       </div>
@@ -943,14 +1012,22 @@ function animationRuntime() {
   return `
 (() => {
   const DATA = ${animationDataJson()};
+  const buildHand = ${buildHand.toString()};
+  const derivePoses = ${derivePoses.toString()};
+  const solfegeName = ${solfegeName.toString()};
   const NS = "http://www.w3.org/2000/svg";
+  const FINGER_NAMES = ["thumb", "index", "middle", "ring", "pinky"];
+  const FINGER_KO = { thumb: "엄지", index: "검지", middle: "중지", ring: "약지", pinky: "소지", palm: "손바닥" };
+  const reduceMotion = Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const noteState = {
     index: 0,
     instrument: "alto",
     timer: null,
     speed: 1,
     tween: 0,
-    positions: new Map(),
+    notation: "both",
+    currentFrame: null,
+    keyProgress: Object.fromEntries(DATA.keys.map((key) => [key.id, 0])),
   };
 
   function svgEl(name, attrs = {}) {
@@ -959,21 +1036,21 @@ function animationRuntime() {
     return el;
   }
 
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
   function centerOf(key) {
     if (key.type === "circle") return { x: key.x, y: key.y };
     return { x: key.x + key.w / 2, y: key.y + key.h / 2 };
   }
 
-  function restPoint(key) {
-    const center = centerOf(key);
-    const side = center.x < 78 ? -18 : center.x > 124 ? 18 : 0;
-    const vertical = center.y < 155 ? -30 : 30;
-    return { x: center.x + side, y: center.y + vertical, scale: 0.82, opacity: 0.14 };
+  function lerp(a, b, amount) {
+    return a + (b - a) * amount;
   }
 
-  function pressPoint(key) {
-    const center = centerOf(key);
-    return { x: center.x, y: center.y + 1.6, scale: 1.06, opacity: 0.96 };
+  function ease(t) {
+    return 1 - Math.pow(1 - t, 3);
   }
 
   function pitchClassName(midi) {
@@ -981,9 +1058,119 @@ function animationRuntime() {
     return names[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1);
   }
 
+  function primaryPitch(label) {
+    return String(label).split("/")[0].trim();
+  }
+
   function setText(id, text) {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
+  }
+
+  function readStoredNotation() {
+    try {
+      const stored = window.localStorage.getItem("sax-notation");
+      return ["solfege", "letter", "both"].includes(stored) ? stored : "both";
+    } catch {
+      return "both";
+    }
+  }
+
+  function storeNotation(value) {
+    try {
+      window.localStorage.setItem("sax-notation", value);
+    } catch {
+      // Standalone file SVG contexts may not expose storage.
+    }
+  }
+
+  function formatPitch(letterName, solfege, mode, fullLetterName = letterName) {
+    if (mode === "solfege") return solfege;
+    if (mode === "letter") return fullLetterName;
+    return solfege + " (" + fullLetterName + ")";
+  }
+
+  function formatNote(note, full = true) {
+    const letter = full ? note.label : primaryPitch(note.label);
+    return formatPitch(primaryPitch(note.label), note.solfege, noteState.notation, letter);
+  }
+
+  function interpolateFrames(from, to, amount) {
+    const result = clone(to);
+    ["lh", "rh"].forEach((side) => {
+      ["tx", "ty", "rotation"].forEach((property) => {
+        result[side].root[property] = lerp(from[side].root[property], to[side].root[property], amount);
+      });
+      FINGER_NAMES.forEach((fingerName) => {
+        const a = from[side].fingers[fingerName];
+        const b = to[side].fingers[fingerName];
+        const finger = result[side].fingers[fingerName];
+        finger.pivot.x = lerp(a.pivot.x, b.pivot.x, amount);
+        finger.pivot.y = lerp(a.pivot.y, b.pivot.y, amount);
+        finger.angles.mcp = lerp(a.angles.mcp, b.angles.mcp, amount);
+        finger.angles.pip = lerp(a.angles.pip, b.angles.pip, amount);
+        finger.angles.dip = lerp(a.angles.dip, b.angles.dip, amount);
+        const fromContact = a.contactProgress === undefined ? (a.active ? 1 : 0) : a.contactProgress;
+        const toContact = b.active ? 1 : 0;
+        finger.contactProgress = lerp(fromContact, toContact, amount);
+      });
+    });
+    return result;
+  }
+
+  function applyHandFrame(frame) {
+    const fingerLayer = document.getElementById("anim-finger-layer");
+    ["lh", "rh"].forEach((side) => {
+      const hand = frame[side];
+      const handNode = fingerLayer.querySelector('[data-hand="' + side + '"]');
+      if (!handNode) return;
+      handNode.setAttribute("transform", "translate(" + hand.root.tx.toFixed(3) + " " + hand.root.ty.toFixed(3) + ") rotate(" + hand.root.rotation.toFixed(3) + " " + hand.root.cx + " " + hand.root.cy + ")");
+      handNode.classList.toggle("is-palm-pressed", Boolean(hand.palmPress));
+      FINGER_NAMES.forEach((fingerName) => {
+        const finger = hand.fingers[fingerName];
+        const fingerNode = handNode.querySelector('[data-finger="' + fingerName + '"]');
+        if (!fingerNode) return;
+        const mcp = finger.angles.mcp * 180 / Math.PI;
+        const pip = (finger.angles.pip - finger.angles.mcp) * 180 / Math.PI;
+        const dip = (finger.angles.dip - finger.angles.pip) * 180 / Math.PI;
+        fingerNode.setAttribute("transform", "translate(" + finger.pivot.x.toFixed(3) + " " + finger.pivot.y.toFixed(3) + ") rotate(" + mcp.toFixed(3) + ")");
+        fingerNode.querySelector('[data-joint="pip"]')?.setAttribute("transform", "translate(" + finger.lengths[0] + " 0) rotate(" + pip.toFixed(3) + ")");
+        const dipNode = fingerNode.querySelector('[data-joint="dip"]');
+        if (dipNode) {
+          const squeeze = (finger.contactProgress || 0) > 0.82 ? 0.94 : 1;
+          dipNode.setAttribute("transform", "translate(" + finger.lengths[1] + " 0) rotate(" + dip.toFixed(3) + ") scale(" + squeeze + " 1)");
+        }
+        const contactProgress = finger.contactProgress === undefined ? (finger.active ? 1 : 0) : finger.contactProgress;
+        fingerNode.classList.toggle("is-pressed", contactProgress > 0.5);
+        const shadow = fingerNode.querySelector(".finger-contact-shadow");
+        if (shadow) shadow.style.opacity = String(Math.max(0, Math.min(1, contactProgress)));
+      });
+    });
+  }
+
+  function renderContacts(frame) {
+    const layer = document.getElementById("anim-contact-layer");
+    layer.replaceChildren();
+    Object.entries(frame.contacts).forEach(([keyId, point]) => {
+      const key = DATA.keys.find((candidate) => candidate.id === keyId);
+      if (!key) return;
+      const group = svgEl("g", { class: "anim-contact", "data-key": keyId });
+      const dot = svgEl("circle", { cx: point.x, cy: point.y, r: 2.7, class: "hand-contact-dot" });
+      const tagWidth = Math.max(16, key.label.length * 5.2 + 8);
+      const tag = svgEl("g", { transform: "translate(" + point.x + " " + (point.y - 12) + ")" });
+      const tagRect = svgEl("rect", { x: -tagWidth / 2, y: -6.2, width: tagWidth, height: 11.5, rx: 4.2, class: "hand-contact-tag" });
+      const tagText = svgEl("text", { x: 0, y: 0, class: "hand-contact-label" });
+      tagText.textContent = key.label;
+      tag.append(tagRect, tagText);
+      group.append(dot, tag);
+      layer.append(group);
+    });
+  }
+
+  function setContactOpacity(value) {
+    document.querySelectorAll(".anim-contact").forEach((element) => {
+      element.style.opacity = String(value);
+    });
   }
 
   function renderKeys() {
@@ -993,7 +1180,7 @@ function animationRuntime() {
     fingerLayer.replaceChildren();
 
     DATA.keys.forEach((key) => {
-      const keyGroup = svgEl("g", { class: "anim-key", "data-key": key.id });
+      const keyGroup = svgEl("g", { class: "anim-key", "data-key": key.id, role: "button", tabindex: "0", "aria-label": key.label + " 키" });
       let shape;
       if (key.type === "circle") {
         shape = svgEl("circle", { cx: key.x, cy: key.y, r: key.r });
@@ -1006,75 +1193,88 @@ function animationRuntime() {
       label.textContent = key.label;
       keyGroup.append(shape, label);
       keyLayer.append(keyGroup);
-
-      const center = centerOf(key);
-      const rx = key.type === "circle" ? Math.max(key.r * 1.32, 8) : Math.max(key.w * 0.5, 10);
-      const finger = svgEl("g", { class: "anim-finger", "data-key": key.id });
-      const pad = svgEl("ellipse", { cx: 0, cy: 0, rx, ry: Math.max(rx * 0.54, 7) });
-      const nail = svgEl("ellipse", { cx: rx * 0.16, cy: -1.5, rx: Math.max(rx * 0.28, 4), ry: 2.4, class: "finger-nail" });
-      finger.append(pad, nail);
-      fingerLayer.append(finger);
-      const start = restPoint(key);
-      noteState.positions.set(key.id, start);
-      finger.setAttribute("transform", "translate(" + start.x + " " + start.y + ") scale(" + start.scale + ")");
-      finger.style.opacity = start.opacity;
+      const activate = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const index = DATA.notes.findIndex((note) => note.pressed.includes(key.id));
+        if (index >= 0) setNote(index);
+        else setText("anim-formula", key.label + " · 대체 운지 전용 키");
+      };
+      keyGroup.addEventListener("click", activate);
+      keyGroup.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") activate(event);
+      });
     });
+
+    const rest = derivePoses([], DATA.fingerMap, DATA.keys, DATA.handGeometry);
+    fingerLayer.innerHTML = buildHand("lh", rest.lh, "anim") + buildHand("rh", rest.rh, "anim");
+    noteState.currentFrame = clone(rest);
+    applyHandFrame(rest);
   }
 
   function updateReadout(note) {
     const config = DATA.chartConfigs[noteState.instrument] || DATA.chartConfigs.alto;
     const concert = pitchClassName(note.midi - config.transpositionSemitones);
     setText("anim-instrument", config.englishName);
-    setText("anim-note", note.label);
-    setText("anim-concert", "실음 " + concert);
+    setText("anim-note", formatNote(note, true));
+    setText("anim-concert", "실음 " + formatPitch(concert, solfegeName(concert), noteState.notation, concert));
     setText("anim-formula", note.formula);
     setText("anim-active-count", note.pressed.length + " keys");
+    ["lh", "rh"].forEach((side) => {
+      const used = note.pressed.map((keyId) => DATA.fingerMap[keyId]).filter((mapping) => mapping && mapping.hand === side).map((mapping) => FINGER_KO[mapping.finger]);
+      const fingers = [...new Set(used)].join("·") || "누르는 손가락 없음";
+      document.querySelector('[data-hand="' + side + '"]')?.setAttribute("aria-label", (side === "lh" ? "왼손 " : "오른손 ") + fingers + "로 누르는 " + note.solfege + " (" + note.label + ") 운지");
+    });
   }
 
   function setNote(nextIndex, animate = true) {
     noteState.index = (nextIndex + DATA.notes.length) % DATA.notes.length;
     const note = DATA.notes[noteState.index];
     const pressed = new Set(note.pressed);
+    const targetFrame = derivePoses(note.pressed, DATA.fingerMap, DATA.keys, DATA.handGeometry);
+    const fromFrame = clone(noteState.currentFrame || targetFrame);
     updateReadout(note);
 
     const noteSelect = document.getElementById("note-select");
     if (noteSelect) noteSelect.value = String(noteState.index);
 
-    DATA.keys.forEach((key) => {
-      const keyGroup = document.querySelector('.anim-key[data-key="' + key.id + '"]');
-      if (keyGroup) keyGroup.classList.toggle("active", pressed.has(key.id));
-    });
-
     const tweenId = ++noteState.tween;
     const started = performance.now();
-    const duration = animate ? 430 : 1;
-    const frames = DATA.keys.map((key) => {
-      const from = noteState.positions.get(key.id) || restPoint(key);
-      const to = pressed.has(key.id) ? pressPoint(key) : restPoint(key);
-      return { key, from, to, el: document.querySelector('.anim-finger[data-key="' + key.id + '"]') };
-    });
-
-    function ease(t) {
-      return 1 - Math.pow(1 - t, 3);
-    }
+    const duration = animate && !reduceMotion ? 430 : 1;
+    const fromKeys = { ...noteState.keyProgress };
+    const toKeys = Object.fromEntries(DATA.keys.map((key) => [key.id, pressed.has(key.id) ? 1 : 0]));
+    const fromTableKey = fromFrame.lh.fingers.pinky.keyIds[0] || null;
+    const toTableKey = targetFrame.lh.fingers.pinky.keyIds[0] || null;
+    const tableSlide = Boolean(fromTableKey && toTableKey && fromTableKey !== toTableKey);
+    renderContacts(targetFrame);
+    setContactOpacity(duration === 1 ? 1 : 0);
 
     function frame(now) {
       if (tweenId !== noteState.tween) return;
       const t = Math.min(1, (now - started) / duration);
       const e = ease(t);
-      frames.forEach(({ key, from, to, el }) => {
-        const x = from.x + (to.x - from.x) * e;
-        const y = from.y + (to.y - from.y) * e;
-        const scale = from.scale + (to.scale - from.scale) * e;
-        const opacity = from.opacity + (to.opacity - from.opacity) * e;
-        el.setAttribute("transform", "translate(" + x.toFixed(2) + " " + y.toFixed(2) + ") scale(" + scale.toFixed(3) + ")");
-        el.style.opacity = opacity.toFixed(3);
-        if (t === 1) noteState.positions.set(key.id, to);
+      const nextFrame = interpolateFrames(fromFrame, targetFrame, e);
+      if (tableSlide) nextFrame.lh.fingers.pinky.pivot.y -= Math.sin(Math.PI * e) * 6;
+      applyHandFrame(nextFrame);
+      DATA.keys.forEach((key) => {
+        const progress = lerp(fromKeys[key.id] || 0, toKeys[key.id], e);
+        noteState.keyProgress[key.id] = progress;
+        const keyGroup = document.querySelector('.anim-key[data-key="' + key.id + '"]');
+        if (keyGroup) keyGroup.classList.toggle("active", progress > 0.5);
       });
+      setContactOpacity(Math.max(0, Math.min(1, (e - 0.82) / 0.18)));
+      noteState.currentFrame = clone(nextFrame);
       if (t < 1) requestAnimationFrame(frame);
+      else {
+        noteState.currentFrame = clone(targetFrame);
+        noteState.keyProgress = toKeys;
+        applyHandFrame(targetFrame);
+        setContactOpacity(1);
+      }
     }
 
-    requestAnimationFrame(frame);
+    if (duration === 1) frame(started + 1);
+    else requestAnimationFrame(frame);
   }
 
   function stopPlayback() {
@@ -1090,6 +1290,19 @@ function animationRuntime() {
     if (playButton) playButton.textContent = "Pause";
     const delay = Math.max(420, Math.round(1450 / noteState.speed));
     noteState.timer = setInterval(() => setNote(noteState.index + 1), delay);
+  }
+
+  function populateNoteOptions() {
+    const noteSelect = document.getElementById("note-select");
+    if (!noteSelect) return;
+    noteSelect.replaceChildren();
+    DATA.notes.forEach((note, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = formatNote(note, false) + " · " + note.short;
+      noteSelect.append(option);
+    });
+    noteSelect.value = String(noteState.index);
   }
 
   function wireHtmlControls() {
@@ -1109,15 +1322,17 @@ function animationRuntime() {
         setNote(noteState.index, false);
       });
     }
-    if (noteSelect) {
-      noteSelect.replaceChildren();
-      DATA.notes.forEach((note, index) => {
-        const option = document.createElement("option");
-        option.value = String(index);
-        option.textContent = note.label + " · " + note.short;
-        noteSelect.append(option);
+    populateNoteOptions();
+    if (noteSelect) noteSelect.addEventListener("change", () => setNote(Number(noteSelect.value)));
+    const notationSelect = document.getElementById("notation-select");
+    if (notationSelect) {
+      notationSelect.value = noteState.notation;
+      notationSelect.addEventListener("change", () => {
+        noteState.notation = notationSelect.value;
+        storeNotation(noteState.notation);
+        populateNoteOptions();
+        updateReadout(DATA.notes[noteState.index]);
       });
-      noteSelect.addEventListener("change", () => setNote(Number(noteSelect.value)));
     }
     document.getElementById("prev-note")?.addEventListener("click", () => setNote(noteState.index - 1));
     document.getElementById("next-note")?.addEventListener("click", () => setNote(noteState.index + 1));
@@ -1131,11 +1346,32 @@ function animationRuntime() {
     });
   }
 
+  function wireKeyboard() {
+    document.addEventListener("keydown", (event) => {
+      const target = event.target;
+      const tag = target && target.tagName ? target.tagName.toLowerCase() : "";
+      if (["input", "select", "textarea", "button"].includes(tag)) return;
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        setNote(noteState.index - 1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        setNote(noteState.index + 1);
+      } else if (event.code === "Space") {
+        event.preventDefault();
+        if (noteState.timer) stopPlayback();
+        else playPlayback();
+      }
+    });
+  }
+
   window.initSaxAnimation = function initSaxAnimation(options = {}) {
     noteState.instrument = options.instrument || "alto";
     noteState.speed = Number(document.getElementById("speed-range")?.value || 1);
+    noteState.notation = readStoredNotation();
     renderKeys();
     wireHtmlControls();
+    wireKeyboard();
     setNote(0, false);
     if (options.standalone) {
       playPlayback();
@@ -1179,13 +1415,14 @@ function animationSvgCss() {
     .anim-subtitle{font:17px Arial,"Malgun Gothic",sans-serif;fill:#475569}
     .anim-body-line,.anim-hand-sep{stroke:#cbd5e1;stroke-width:2;stroke-linecap:round}
     .anim-hand-label{font:700 8px Arial,sans-serif;fill:#94a3b8;text-anchor:middle}
+    .anim-key{cursor:pointer;outline:none}
     .anim-key circle,.anim-key rect{fill:#fff;stroke:#64748b;stroke-width:1.5}
     .anim-key text{font:700 8px Arial,sans-serif;fill:#475569;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
     .anim-key.active circle,.anim-key.active rect{fill:#111827;stroke:#111827}
     .anim-key.active text{fill:#fff}
-    .anim-finger{pointer-events:none}
-    .anim-finger ellipse:first-child{fill:#f3bc98;stroke:#9a5c35;stroke-width:1.05}
-    .finger-nail{fill:#ffe5d0;stroke:none}
+    .anim-key:focus circle,.anim-key:focus rect{stroke:#0f766e;stroke-width:2.6}
+    #anim-finger-layer{pointer-events:none}
+    .anim-contact{pointer-events:none}
     .readout-panel{fill:#fff;stroke:#cbd5e1;stroke-width:1.2}
     .readout-kicker{font:800 16px Arial,"Malgun Gothic",sans-serif;fill:#0f766e}
     .readout-note{font:800 38px Arial,"Malgun Gothic",sans-serif;fill:#0f172a}
@@ -1195,6 +1432,7 @@ function animationSvgCss() {
     .mini-legend text{font:700 15px Arial,"Malgun Gothic",sans-serif;fill:#334155}
     .legend-pressed{fill:#111827}
     .legend-finger{fill:#f3bc98;stroke:#9a5c35;stroke-width:1.05}
+    .legend-nail{fill:#ffe5d0}
   `;
 }
 
@@ -1216,8 +1454,9 @@ function animationCss() {
     .stage-wrap{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
     .animation-stage{display:block;width:100%;height:auto}
     .transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
-    button{height:40px;min-width:46px;border:1px solid #94a3b8;border-radius:8px;background:#fff;color:var(--ink);cursor:pointer}
+    button{height:44px;min-width:46px;border:1px solid #94a3b8;border-radius:8px;background:#fff;color:var(--ink);cursor:pointer}
     button:hover{background:#f1f5f9}
+    button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid rgb(15 118 110 / 32%);outline-offset:2px}
     #play-toggle{min-width:84px;background:#111827;color:#fff;border-color:#111827}
     .speed-control{display:flex;align-items:center;gap:10px;margin-left:auto}
     .speed-control input{width:220px}
@@ -1226,20 +1465,25 @@ function animationCss() {
       .animation-header{display:block}
       .control-cluster{margin-top:16px}
       select{width:100%}
+      .stage-wrap{max-height:58vh}
+      .animation-stage{max-height:58vh;object-fit:contain}
       .speed-control{width:100%;margin-left:0}
       .speed-control input{width:100%}
     }
+    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
   `;
 }
 
 function sharedSvgCss() {
   return `
+    ${handSvgCss()}
     .poster-title{font:800 52px Arial,"Malgun Gothic",sans-serif;fill:#0f172a}
     .poster-korean{font:700 28px Arial,"Malgun Gothic",sans-serif;fill:#334155}
     .poster-lead{font:18px Arial,"Malgun Gothic",sans-serif;fill:#475569}
     .poster-source{font:16px Arial,"Malgun Gothic",sans-serif;fill:#64748b}
     .poster-card-bg{fill:#fff;stroke:#cbd5e1;stroke-width:1.4}
     .poster-note{font:800 31px Arial,"Malgun Gothic",sans-serif;fill:#0f172a}
+    .poster-note-en{font-size:21px;fill:#475569}
     .poster-sub{font:17px Arial,"Malgun Gothic",sans-serif;fill:#475569}
     .poster-formula{font:700 15px Arial,"Malgun Gothic",sans-serif;fill:#1f2937}
     .poster-foot{font:13px Arial,"Malgun Gothic",sans-serif;fill:#b45309}
@@ -1258,6 +1502,12 @@ function sharedSvgCss() {
     .stem{stroke:#111827;stroke-width:1.5}
     .notehead{fill:#111827}
     .accidental{font:700 18px Arial,sans-serif;fill:#111827}
+    .static-contact-layer{pointer-events:none}
+    .compact-palm{fill:#f3bc98;stroke:#9a5c35;stroke-width:1.1}
+    .compact-webbing{fill:none;stroke:#c98a5e;stroke-width:1}
+    .compact-finger line{stroke:#f3bc98;stroke-linecap:round;stroke-linejoin:round}
+    .compact-finger.is-pressed line{stroke:#efad83}
+    .compact-nail{fill:#ffe5d0;stroke:#9a5c35;stroke-width:.45}
   `;
 }
 
@@ -1286,12 +1536,13 @@ function htmlCss() {
     .card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
     .card{border:1px solid #dbe3ef;border-radius:10px;padding:10px;min-height:206px;display:flex;flex-direction:column}
     .card header{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}
-    .card h3{margin:0;font-size:21px;line-height:1}
+    .card h3{margin:0;font-size:19px;line-height:1.12}
+    .card h3 small{font-size:11px;color:var(--muted);font-weight:700}
     .card header p{margin:4px 0 0;color:var(--muted);font-size:12px;font-weight:700}
     .concert{font-size:12px;color:#0f766e;font-weight:800;white-space:nowrap}
-    .visuals{display:grid;grid-template-columns:1fr 116px;align-items:center;gap:8px;min-height:116px}
+    .visuals{display:grid;grid-template-columns:minmax(0,1fr) 90px 90px;align-items:center;gap:5px;min-height:116px}
     .staff{width:100%;height:auto}
-    .diagram{width:112px;height:auto}
+    .diagram,.hand-diagram{width:90px;height:auto}
     .formula{margin-top:auto;font-size:12px;font-weight:800;color:#1f2937;line-height:1.3}
     .note{margin-top:3px;font-size:11px;color:#b45309;font-weight:700}
     .sources{margin:28px 0 0;padding:18px 20px;background:#fff;border:1px solid var(--line);border-radius:12px}
@@ -1313,12 +1564,12 @@ function htmlCss() {
       .sheet h2{font-size:18px}
       .sheet-head p,.sheet-mark{font-size:10px}
       .card-grid{grid-template-columns:repeat(3,1fr);gap:5px}
-      .card{min-height:42mm;padding:5px;border-color:#cbd5e1;break-inside:avoid}
+      .card{min-height:47mm;padding:5px;border-color:#cbd5e1;break-inside:avoid}
       .card h3{font-size:15px}
       .card header{margin-bottom:2px}
       .card header p,.concert{font-size:9px}
-      .visuals{grid-template-columns:1fr 25mm;gap:2px;min-height:24mm}
-      .diagram{width:24mm}
+      .visuals{grid-template-columns:minmax(0,1fr) 23mm 23mm;gap:1px;min-height:27mm}
+      .diagram,.hand-diagram{width:23mm}
       .formula{font-size:8.5px}
       .note{font-size:8px}
     }
@@ -1340,7 +1591,7 @@ async function main() {
   }
   const notePoseErrors = validateNotePoses(notes, keys, FINGER_MAP, HAND_GEOMETRY);
   if (notePoseErrors.length) throw new Error(`33음 포즈 검증 실패:\n${notePoseErrors.join("\n")}`);
-  writeFileSync(svgPath, makePosterSvg(), "utf8");
+  writeFileSync(svgPath, makePosterSvg().replace(/>\s+</g, "><"), "utf8");
   writeFileSync(htmlPath, makeHtml(), "utf8");
   writeFileSync(animationHtmlPath, makeAnimationHtml(), "utf8");
   writeFileSync(animationSvgPath, makeAnimationSvg(), "utf8");
