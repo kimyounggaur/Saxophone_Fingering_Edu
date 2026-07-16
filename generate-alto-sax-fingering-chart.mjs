@@ -107,6 +107,32 @@ const keys = [
   { id: "lowC", label: "C", x: 118, y: 257, w: 30, h: 15, type: "pill", group: "right-pinky" },
 ];
 
+const FINGER_MAP = {
+  ok: { hand: "lh", finger: "thumb", contact: "thumb" },
+  frontF: { hand: "lh", finger: "index", contact: "tip" },
+  lh1: { hand: "lh", finger: "index", contact: "pad" },
+  bis: { hand: "lh", finger: "index", contact: "pad" },
+  lh2: { hand: "lh", finger: "middle", contact: "pad" },
+  lh3: { hand: "lh", finger: "ring", contact: "pad" },
+  gSharp: { hand: "lh", finger: "pinky", contact: "tip" },
+  lowCSharp: { hand: "lh", finger: "pinky", contact: "tip" },
+  lowB: { hand: "lh", finger: "pinky", contact: "tip" },
+  lowBb: { hand: "lh", finger: "pinky", contact: "tip" },
+  pD: { hand: "lh", finger: "palm", contact: "palm" },
+  pEb: { hand: "lh", finger: "palm", contact: "palm" },
+  pF: { hand: "lh", finger: "palm", contact: "palm" },
+  rh1: { hand: "rh", finger: "index", contact: "pad" },
+  altFSharp: { hand: "rh", finger: "ring", contact: "tip" },
+  sideE: { hand: "rh", finger: "index", contact: "knuckle" },
+  sideC: { hand: "rh", finger: "index", contact: "knuckle" },
+  sideBb: { hand: "rh", finger: "index", contact: "knuckle" },
+  highFSharp: { hand: "rh", finger: "middle", contact: "tip" },
+  rh2: { hand: "rh", finger: "middle", contact: "pad" },
+  rh3: { hand: "rh", finger: "ring", contact: "pad" },
+  lowEb: { hand: "rh", finger: "pinky", contact: "tip" },
+  lowC: { hand: "rh", finger: "pinky", contact: "tip" },
+};
+
 const notes = [
   n("Bb3 / A#3", 58, ["lh1", "lh2", "lh3", "lowBb", "rh1", "rh2", "rh3", "lowC"], "Low Bb", "LH 123 + low Bb | RH 123 + low C", "저음 B-flat"),
   n("B3 / Cb4", 59, ["lh1", "lh2", "lh3", "lowB", "rh1", "rh2", "rh3", "lowC"], "Low B", "LH 123 + low B | RH 123 + low C", ""),
@@ -151,7 +177,7 @@ const printPages = [
 ];
 
 function n(label, midi, pressed, short, formula, note) {
-  return { label, midi, pressed, short, formula, note };
+  return { label, midi, pressed, short, formula, note, solfege: solfegeName(label) };
 }
 
 function esc(value) {
@@ -169,6 +195,15 @@ function pitchClassName(midi) {
 
 function primaryPitch(label) {
   return label.split("/")[0].trim();
+}
+
+function solfegeName(label) {
+  const pitch = String(label).split("/")[0].trim();
+  const match = pitch.match(/^([A-G])([#b]?)(-?\d+)$/);
+  if (!match) return pitch.replaceAll("#", "♯").replaceAll("b", "♭");
+  const syllables = { C: "도", D: "레", E: "미", F: "파", G: "솔", A: "라", B: "시" };
+  const accidentalMark = match[2] === "#" ? "♯" : match[2] === "b" ? "♭" : "";
+  return `${syllables[match[1]]}${accidentalMark}${match[3]}`;
 }
 
 function accidental(label) {
@@ -381,7 +416,7 @@ function makeHtml() {
 }
 
 function animationDataJson() {
-  return JSON.stringify({ keys, notes, chartConfigs }, null, 2).replaceAll("<", "\\u003c");
+  return JSON.stringify({ keys, notes, chartConfigs, fingerMap: FINGER_MAP }, null, 2).replaceAll("<", "\\u003c");
 }
 
 function makeAnimationStageSvg() {
@@ -840,6 +875,13 @@ function htmlCss() {
 }
 
 async function main() {
+  const missingFingerMappings = keys.filter((key) => !FINGER_MAP[key.id]).map((key) => key.id);
+  if (missingFingerMappings.length) {
+    throw new Error(`FINGER_MAP 누락: ${missingFingerMappings.join(", ")}`);
+  }
+  if (Object.keys(FINGER_MAP).length !== keys.length) {
+    throw new Error(`FINGER_MAP 개수 불일치: keys=${keys.length}, map=${Object.keys(FINGER_MAP).length}`);
+  }
   writeFileSync(svgPath, makePosterSvg(), "utf8");
   writeFileSync(htmlPath, makeHtml(), "utf8");
   writeFileSync(animationHtmlPath, makeAnimationHtml(), "utf8");
