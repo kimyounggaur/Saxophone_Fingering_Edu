@@ -36,6 +36,7 @@ test("server-renders the complete Korean learning app and social metadata", asyn
   assert.match(html, /배우기/);
   assert.match(html, /연습/);
   assert.match(html, /운지표/);
+  assert.match(html, /음색 듣기/);
   assert.match(html, /sax-stage__svg/);
   assert.match(html, /property="og:image" content="https:\/\/saxhands\.example\/og\.png"/i);
   assert.match(html, /name="twitter:card" content="summary_large_image"/i);

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "saxhands-v2-20260715";
+const CACHE_VERSION = "saxhands-v3-20260724";
 const APP_ROOT = new URL("./", self.registration.scope);
 const appUrl = (path = "") => new URL(path, APP_ROOT).toString();
 const SHELL = [appUrl(), appUrl("manifest.webmanifest"), appUrl("offline.html"), appUrl("icon-192.png")];

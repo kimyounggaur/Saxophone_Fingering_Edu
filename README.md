@@ -17,7 +17,7 @@
 - 23키·10손가락 SVG 리그, 연주자/거울 시점, 중단 안전 애니메이션
 - 6개 변화 중심 레슨과 `콘텐츠 검수 중` 상태
 - 운지 회상·손 모양 인식·10문제 로컬 연습과 Leitner 진도 엔진
-- Web Audio 합성 기준음, 터치 진동 선택, 동작 줄이기
+- SaxTone 2.0 악기별 모델링 합성음, 음량·실음/기보음 선택, 터치 진동
 - 검색 가능한 운지표, 오선 음표, 인쇄 전용 33음 표
 - PWA manifest, 로컬 설정·진도, 오프라인 폴백, 라이트/다크 테마
 - 키보드·스크린리더·48px 터치 목표·safe-area 대응
@@ -34,7 +34,7 @@ npm exec tsc -- --noEmit
 npm test
 ```
 
-`npm test`는 배포 빌드, 서버 렌더링, 공유 메타데이터, 원본 지문·23키·33음·이조 불변식, 설치·오프라인 자산을 검사합니다. 브랜드 PNG를 다시 만들 때는 `node scripts/generate-brand-assets.mjs`를 실행합니다.
+`npm test`는 배포 빌드, 서버 렌더링, 공유 메타데이터, 원본 지문·23키·33음·이조 불변식, SaxTone 배음·엔벌로프, 설치·오프라인 자산을 검사합니다. 브랜드 PNG를 다시 만들 때는 `node scripts/generate-brand-assets.mjs`를 실행합니다.
 
 ## 데이터 갱신 규칙
 
@@ -52,6 +52,7 @@ node scripts/extract-source-data.mjs --check
 - `lib/generated/source-data.ts`: 원본에서 재현한 23키·33음 seed
 - `lib/sax-data.ts`: 음이름·실음·악기 capability·검수 상태
 - `lib/sax-rig.ts`: 고정 길이 손 리그와 운지 프레임
+- `lib/sax-synth.ts`: 악기별 배음·관 공명·호흡·비브라토 합성 엔진
 - `lib/learning.ts`: 레슨 diff, seeded 연습 큐, Leitner·migration
 - `app/components/`: 색소폰 스테이지와 오선 음표
 - `app/SaxHandsApp.tsx`: 탐색·배우기·연습·운지표·설정 UI

@@ -20,6 +20,11 @@ import {
   type SaxCapabilityProfile,
   type SaxNote,
 } from "@/lib/sax-data";
+import {
+  SAX_SYNTH_VERSION,
+  createSaxSynthEngine,
+  type SaxSynthEngine,
+} from "@/lib/sax-synth";
 
 type AppMode = "explore" | "learn" | "practice" | "chart";
 type ThemeChoice = "system" | "light" | "dark";
@@ -287,8 +292,8 @@ export function SaxHandsApp() {
   const settingsPanelRef = useRef<HTMLElement>(null);
   const settingsCloseRef = useRef<HTMLButtonElement>(null);
   const currentPressedRef = useRef<readonly string[]>(pressedKeys(SAX_NOTES.find((note) => note.writtenMidi === 67) ?? SAX_NOTES[0]));
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const activeVoicesRef = useRef<Array<{ oscillator: OscillatorNode; gain: GainNode }>>([]);
+  const synthRef = useRef<SaxSynthEngine | null>(null);
+  const autoToneTimerRef = useRef<number | null>(null);
   const refreshingForUpdateRef = useRef(false);
 
   const capabilityProfile = useMemo<SaxCapabilityProfile>(
@@ -308,6 +313,7 @@ export function SaxHandsApp() {
   const practiceDone = practiceQueue.length > 0 && practiceIndex >= practiceQueue.length;
   const recognitionProtected = mode === "practice" && practiceKind === "recognition" && !practiceRevealed && !practiceDone;
   const recallProtected = mode === "practice" && practiceKind === "recall" && !practiceRevealed && !practiceDone;
+  const practiceAudioProtected = recognitionProtected || recallProtected;
   const answerVisibility: AnswerVisibility = recallProtected
     ? "recall-hidden"
     : recognitionProtected
@@ -318,7 +324,16 @@ export function SaxHandsApp() {
     const timer = window.setTimeout(() => {
       try {
         const savedSettings = window.localStorage.getItem(SETTINGS_KEY);
-        if (savedSettings) setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(savedSettings) });
+        if (savedSettings) {
+          const parsed = JSON.parse(savedSettings) as Partial<AppSettings>;
+          const instrument = parsed.instrument && parsed.instrument in SAX_INSTRUMENTS
+            ? parsed.instrument
+            : DEFAULT_SETTINGS.instrument;
+          const volume = typeof parsed.volume === "number" && Number.isFinite(parsed.volume)
+            ? Math.min(1, Math.max(0, parsed.volume))
+            : DEFAULT_SETTINGS.volume;
+          setSettings({ ...DEFAULT_SETTINGS, ...parsed, instrument, volume });
+        }
         else if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
           setSettings((current) => ({ ...current, reducedMotion: true }));
         }
@@ -404,58 +419,46 @@ export function SaxHandsApp() {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
+  const getOrCreateSynth = useCallback(() => {
+    if (!synthRef.current) synthRef.current = createSaxSynthEngine();
+    return synthRef.current;
+  }, []);
+
   const stopVoices = useCallback(() => {
-    const now = audioContextRef.current?.currentTime ?? 0;
-    for (const voice of activeVoicesRef.current) {
-      try {
-        voice.gain.gain.cancelScheduledValues(now);
-        voice.gain.gain.setTargetAtTime(0.0001, now, 0.025);
-        voice.oscillator.stop(now + 0.12);
-      } catch {
-        // The voice may already be stopped.
-      }
+    if (autoToneTimerRef.current !== null) {
+      window.clearTimeout(autoToneTimerRef.current);
+      autoToneTimerRef.current = null;
     }
-    activeVoicesRef.current = [];
+    synthRef.current?.stopAll();
   }, []);
 
   const playTone = useCallback(
     async (writtenMidi: number) => {
-      const AudioCtor = window.AudioContext ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtor) {
-        setToast("이 브라우저에서는 기준음을 재생할 수 없습니다.");
+      const synth = getOrCreateSynth();
+      if (!synth) {
+        setToast("이 브라우저에서는 색소폰 합성음을 재생할 수 없습니다.");
         return;
       }
-      const context = audioContextRef.current ?? new AudioCtor();
-      audioContextRef.current = context;
-      if (context.state === "suspended") await context.resume();
-      while (activeVoicesRef.current.length >= 2) {
-        const oldest = activeVoicesRef.current.shift();
-        try {
-          oldest?.oscillator.stop();
-        } catch {
-          // Already stopped.
-        }
+      synth.setVolume(settings.volume);
+      if (!(await synth.ensureRunning())) {
+        setToast("브라우저의 오디오 재생 허용 후 다시 눌러 주세요.");
+        return;
       }
-      const midi = settings.referenceBasis === "concert" ? concertMidi(writtenMidi, settings.instrument) : writtenMidi;
-      const frequency = 440 * 2 ** ((midi - 69) / 12);
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      const now = context.currentTime;
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(frequency, now);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(Math.max(0.01, settings.volume), now + 0.04);
-      gain.gain.setTargetAtTime(0.0001, now + 0.72, 0.08);
-      oscillator.connect(gain).connect(context.destination);
-      oscillator.start(now);
-      oscillator.stop(now + 1.05);
-      const voice = { oscillator, gain };
-      activeVoicesRef.current.push(voice);
-      oscillator.onended = () => {
-        activeVoicesRef.current = activeVoicesRef.current.filter((candidate) => candidate !== voice);
-      };
+      const midi = settings.referenceBasis === "concert"
+        ? concertMidi(writtenMidi, settings.instrument)
+        : writtenMidi;
+      try {
+        synth.play({
+          midi,
+          instrument: settings.instrument,
+          duration: settings.animationSpeed === "slow" ? 1.72 : 1.42,
+        });
+      } catch {
+        synth.stopAll();
+        setToast("오디오 장치를 준비하지 못했습니다. 잠시 후 다시 눌러 주세요.");
+      }
     },
-    [settings.instrument, settings.referenceBasis, settings.volume],
+    [getOrCreateSynth, settings.animationSpeed, settings.instrument, settings.referenceBasis, settings.volume],
   );
 
   const selectNote = useCallback(
@@ -477,10 +480,24 @@ export function SaxHandsApp() {
       const name = writtenMidiToNames(midi, settings.accidental).display;
       setAnnouncement(`${name}, ${writtenMidiToFixedDo(midi)} 운지를 표시했습니다.`);
       if (settings.haptics) navigator.vibrate?.(HAPTIC_MS);
-      if (settings.autoTone) window.setTimeout(() => void playTone(midi), settings.reducedMotion ? 0 : settings.animationSpeed === "slow" ? 620 : 430);
+      if (autoToneTimerRef.current !== null) {
+        window.clearTimeout(autoToneTimerRef.current);
+        autoToneTimerRef.current = null;
+      }
+      if (settings.autoTone && source !== "practice" && !practiceAudioProtected) {
+        const synth = getOrCreateSynth();
+        if (synth) {
+          synth.setVolume(settings.volume);
+          void synth.ensureRunning();
+        }
+        autoToneTimerRef.current = window.setTimeout(() => {
+          autoToneTimerRef.current = null;
+          void playTone(midi);
+        }, settings.reducedMotion ? 0 : settings.animationSpeed === "slow" ? 620 : 430);
+      }
       return true;
     },
-    [capabilityProfile, playTone, settings.accidental, settings.animationSpeed, settings.autoTone, settings.highFSharpKey, settings.haptics, settings.reducedMotion],
+    [capabilityProfile, getOrCreateSynth, playTone, practiceAudioProtected, settings.accidental, settings.animationSpeed, settings.autoTone, settings.highFSharpKey, settings.haptics, settings.reducedMotion, settings.volume],
   );
 
   const moveNote = useCallback(
@@ -514,6 +531,17 @@ export function SaxHandsApp() {
       window.removeEventListener("pagehide", stopVoices);
     };
   }, [stopVoices]);
+
+  useEffect(() => {
+    synthRef.current?.setVolume(settings.volume);
+  }, [settings.volume]);
+
+  useEffect(() => () => {
+    if (autoToneTimerRef.current !== null) window.clearTimeout(autoToneTimerRef.current);
+    const synth = synthRef.current;
+    synthRef.current = null;
+    void synth?.dispose();
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -770,10 +798,18 @@ export function SaxHandsApp() {
                 </div>
 
                 <div className="transport" aria-label="운지 재생 조작">
-                  <button type="button" onClick={() => moveNote(-1, "previous")} aria-label="이전 반음">← 이전</button>
+                  <button type="button" disabled={practiceAudioProtected} onClick={() => moveNote(-1, "previous")} aria-label="이전 반음">← 이전</button>
                   <button type="button" onClick={() => setReplayToken((token) => token + 1)}>↻ 다시</button>
-                  <button type="button" onClick={() => void playTone(currentNote.writtenMidi)} aria-label="합성 기준음 듣기">♪ 기준음</button>
-                  <button type="button" aria-pressed={autoplay} onClick={() => setAutoplay((value) => !value)}>{autoplay ? "■ 정지" : "▶ 재생"}</button>
+                  <button
+                    type="button"
+                    disabled={practiceAudioProtected}
+                    onClick={() => void playTone(currentNote.writtenMidi)}
+                    aria-label="고품질 색소폰 모델링 합성음 듣기"
+                    title={practiceAudioProtected ? "정답을 확인한 뒤 들을 수 있습니다." : `${instrument.koreanName} 모델링 음색`}
+                  >
+                    ♪ 음색 듣기
+                  </button>
+                  <button type="button" disabled={practiceAudioProtected} aria-pressed={autoplay} onClick={() => setAutoplay((value) => !value)}>{autoplay ? "■ 정지" : "▶ 재생"}</button>
                 </div>
               </article>
 
@@ -963,8 +999,21 @@ export function SaxHandsApp() {
                 <div className="setting-row"><label htmlFor="setting-view">손 시점</label><select id="setting-view" value={settings.view} onChange={(event) => setSettings((current) => ({ ...current, view: event.target.value as SaxophoneStageView }))}><option value="player">연주자 시점</option><option value="mirror">거울 시점</option></select></div>
                 <div className="setting-row"><label htmlFor="setting-theme">화면 테마</label><select id="setting-theme" value={settings.theme} onChange={(event) => setSettings((current) => ({ ...current, theme: event.target.value as ThemeChoice }))}><option value="system">기기 설정</option><option value="light">라이트</option><option value="dark">다크</option></select></div>
                 <div className="setting-row"><span className="setting-label">동작 줄이기<small>애니메이션 없이 최종 자세를 즉시 표시합니다.</small></span><label className="switch"><input type="checkbox" aria-label="동작 줄이기" checked={settings.reducedMotion} onChange={(event) => setSettings((current) => ({ ...current, reducedMotion: event.target.checked }))} /><span /></label></div>
-                <div className="setting-row"><span className="setting-label">선택 시 기준음<small>합성 기준음이며 실제 색소폰 음색이 아닙니다.</small></span><label className="switch"><input type="checkbox" aria-label="선택 시 기준음 자동 재생" checked={settings.autoTone} onChange={(event) => setSettings((current) => ({ ...current, autoTone: event.target.checked }))} /><span /></label></div>
+                <div className="setting-row"><span className="setting-label">선택 시 색소폰 음색<small>{SAX_SYNTH_VERSION} · 실제 연주 녹음이 아닌 악기별 모델링 합성음입니다.</small></span><label className="switch"><input type="checkbox" aria-label="선택 시 색소폰 모델링 음색 자동 재생" checked={settings.autoTone} onChange={(event) => {
+                  const checked = event.target.checked;
+                  setSettings((current) => ({ ...current, autoTone: checked }));
+                  if (checked) {
+                    const synth = getOrCreateSynth();
+                    if (synth) {
+                      synth.setVolume(settings.volume);
+                      void synth.ensureRunning();
+                    }
+                  } else {
+                    stopVoices();
+                  }
+                }} /><span /></label></div>
                 <div className="setting-row"><label htmlFor="setting-tone-basis">기준음 기준</label><select id="setting-tone-basis" value={settings.referenceBasis} onChange={(event) => setSettings((current) => ({ ...current, referenceBasis: event.target.value as ReferenceBasis }))}><option value="concert">실제로 들리는 실음</option><option value="written">악보의 기보음</option></select></div>
+                <div className="setting-row"><label htmlFor="setting-volume">음색 음량<small>{Math.round(settings.volume * 100)}% · 0%에서는 완전히 음소거됩니다.</small></label><input id="setting-volume" type="range" min="0" max="1" step="0.01" value={settings.volume} aria-valuetext={`${Math.round(settings.volume * 100)}퍼센트`} onChange={(event) => setSettings((current) => ({ ...current, volume: Number(event.target.value) }))} /></div>
                 <div className="setting-row"><span className="setting-label">짧은 진동<small>지원 기기에서만 10ms 사용합니다.</small></span><label className="switch"><input type="checkbox" aria-label="짧은 진동 피드백" checked={settings.haptics} onChange={(event) => setSettings((current) => ({ ...current, haptics: event.target.checked }))} /><span /></label></div>
                 <div className="setting-row"><label htmlFor="setting-speed">손 이동 속도</label><select id="setting-speed" value={settings.animationSpeed} onChange={(event) => setSettings((current) => ({ ...current, animationSpeed: event.target.value as "normal" | "slow" }))}><option value="normal">보통</option><option value="slow">느리게</option></select></div>
               </div>
