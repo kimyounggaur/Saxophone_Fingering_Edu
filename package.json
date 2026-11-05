@@ -11,11 +11,12 @@
     "build": "vinext build",
     "start": "vinext start",
     "test": "npm run build && npm run test:unit",
-    "test:unit": "node --test tests/rendered-html.test.mjs tests/sax-synth.test.mjs tests/illustration-data.test.mjs",
+    "test:unit": "node --test tests/rendered-html.test.mjs tests/sax-synth.test.mjs tests/sax-model.test.mjs tests/sax-synth-model.test.mjs tests/mp3-export.test.mjs tests/listening-lab.test.mjs tests/illustration-data.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .vercel",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@breezystack/lamejs": "1.2.7",
     "drizzle-orm": "0.45.2",
     "next": "16.2.6",
     "react": "19.2.6",
