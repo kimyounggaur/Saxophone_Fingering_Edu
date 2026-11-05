@@ -311,9 +311,19 @@ button:disabled {
 }
 
 .workspace {
+  /* Width of the control column beside the stage (tabs, playback row, mode card). 20rem = 320px, the narrowest phone width these layouts are built for. */
+  --side-panel: 20rem;
   display: grid;
   min-width: 0;
   gap: 0.8rem;
+}
+
+.right-column {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  min-width: 0;
+  gap: 0.75rem;
 }
 
 .card {
@@ -454,6 +464,11 @@ button:disabled {
   background: radial-gradient(circle at 50% 48%, transparent 0 28%, rgb(32 39 32 / 8%) 92%);
   content: "";
   pointer-events: none;
+}
+
+/* The stage is the last thing in the card now; the card's own border closes it. */
+.stage-card > .stage-shell:last-child {
+  border-bottom: 0;
 }
 
 .stage-hidden {
@@ -962,14 +977,61 @@ button:disabled {
   to { opacity: 0; }
 }
 
-.transport {
+/* Playback controls: one row of five equal buttons (icon over label) under the mode tabs. */
+
+.transport-bar {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.4rem;
-  padding: 0.65rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--paper-sunken);
 }
 
-.transport button,
+.transport-bar button {
+  display: grid;
+  min-width: 0;
+  min-height: 52px;
+  place-items: center;
+  align-content: center;
+  gap: 0.12rem;
+  padding: 0.3rem 0.1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--paper-raised);
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.transport-bar button:disabled {
+  opacity: 0.46;
+}
+
+.tb-icon {
+  display: block;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.tb-label {
+  display: block;
+  max-width: 100%;
+}
+
+.transport-hint {
+  grid-column: 1 / -1;
+  margin: 0.15rem 0.25rem 0.1rem;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
 .ghost-button,
 .secondary-button,
 .primary-button,
@@ -979,7 +1041,6 @@ button:disabled {
   font-weight: 800;
 }
 
-.transport button,
 .ghost-button,
 .secondary-button {
   border: 1px solid var(--line);
@@ -988,7 +1049,7 @@ button:disabled {
   color: var(--ink-muted);
 }
 
-.transport button:hover:not(:disabled),
+.transport-bar button:hover:not(:disabled),
 .ghost-button:hover:not(:disabled),
 .secondary-button:hover:not(:disabled) {
   border-color: var(--brass);
@@ -1010,7 +1071,7 @@ button:disabled {
   color: var(--critical);
 }
 
-.transport button[aria-pressed="true"],
+.transport-bar button[aria-pressed="true"],
 .secondary-button[aria-pressed="true"] {
   border-color: var(--steel-strong);
   background: var(--steel-wash);
@@ -1018,6 +1079,8 @@ button:disabled {
 }
 
 .mode-card {
+  /* The pads and chart cards below size themselves by this card's own width, not the window's. */
+  container: mode / inline-size;
   padding: 0.8rem;
 }
 
@@ -1105,6 +1168,13 @@ button:disabled {
   color: var(--ink);
   text-align: left;
   transition: transform 100ms ease, box-shadow 100ms ease, border-color 100ms ease, background 100ms ease;
+}
+
+/* Four pads per row (the narrow side panel, a phone): trim the side padding so "솔♭ · G♭" fits without an ellipsis. */
+@container mode (width < 26.75rem) {
+  .pitch-pad {
+    padding-inline: 0.36rem;
+  }
 }
 
 .pitch-pad:hover:not(:disabled) {
@@ -1343,6 +1413,7 @@ button:disabled {
   padding: 0.65rem;
   color: inherit;
   text-align: left;
+  word-break: keep-all;
 }
 
 .chart-card:hover {
@@ -1364,6 +1435,24 @@ button:disabled {
 
 .chart-card .staff-note {
   width: 70px;
+}
+
+/* Narrow panel (the 20rem side column, small phones): note name above, solfège and key count below. */
+@container mode (width < 26.75rem) {
+  .chart-card {
+    grid-template-columns: minmax(0, 1fr) 54px;
+    gap: 0.25rem;
+    padding: 0.55rem 0.5rem;
+  }
+
+  .chart-card .staff-note {
+    width: 54px;
+  }
+
+  .chart-note,
+  .chart-meta {
+    display: block;
+  }
 }
 
 .bottom-nav {
@@ -1536,16 +1625,6 @@ button:disabled {
   line-height: 1.65;
 }
 
-/* Sound on/off */
-
-.sound-bar {
-  padding: 0 0.65rem 0.65rem;
-}
-
-.sound-bar button {
-  width: 100%;
-}
-
 .toast {
   position: fixed;
   z-index: 90;
@@ -1626,7 +1705,11 @@ button:disabled {
   .brand-tagline {
     display: block;
   }
+}
 
+/* Wide mode card (a phone in landscape or a small tablet, one column): six pads and three chart cards per row.
+   In the narrow side panel next to the stage the card stays below this width, so it keeps four pads and two cards. */
+@container mode (min-width: 26.75rem) {
   .chromatic-pad {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
@@ -1647,7 +1730,7 @@ button:disabled {
   }
 
   .workspace {
-    grid-template-columns: minmax(0, 1.2fr) minmax(330px, 0.8fr);
+    grid-template-columns: minmax(0, 1fr) var(--side-panel);
     align-items: start;
     gap: 1rem;
   }
@@ -1657,40 +1740,26 @@ button:disabled {
     top: 90px;
   }
 
+  /* The playback buttons moved out of the stage card, so the stage takes the height they left: as tall as the window
+     allows below the sticky header, the note readout and the page margins (18rem), capped at 38rem. */
   .sax-stage,
   .saxophone-stage {
-    height: min(56vh, 480px);
+    height: min(calc(100vh - 18rem), 38rem);
     min-height: 400px;
   }
 
   .mode-card {
-    min-height: 620px;
+    min-height: 31rem;
     padding: 1rem;
   }
 
   .bottom-nav {
     position: static;
-    grid-column: 1;
-    grid-row: 1;
     align-self: start;
-    margin: 0 0 0.75rem;
     padding: 0.35rem;
     border: 1px solid var(--line);
     border-radius: 1rem;
     background: var(--paper-raised);
-  }
-
-  .right-column {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, auto);
-    align-content: start;
-    min-width: 0;
-  }
-
-  .right-column > .mode-card {
-    grid-column: 1;
-    grid-row: 2;
   }
 
   .settings-backdrop {
@@ -1711,16 +1780,6 @@ button:disabled {
     left: auto;
     margin-inline: 0;
   }
-
-  .chart-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1080px) {
-  .chart-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (max-height: 620px) and (orientation: landscape) and (min-width: 700px) {
@@ -1734,7 +1793,7 @@ button:disabled {
   }
 
   .workspace {
-    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.9fr);
+    grid-template-columns: minmax(0, 1fr) var(--side-panel);
   }
 
   .stage-card {
@@ -1772,6 +1831,7 @@ button:disabled {
 @media (forced-colors: active) {
   .pitch-pad[aria-pressed="true"],
   .nav-button[aria-current="page"],
+  .transport-bar button[aria-pressed="true"],
   .octave-control button[aria-pressed="true"] {
     border: 3px solid Highlight;
   }
@@ -1796,7 +1856,7 @@ button:disabled {
   .app-main,
   .bottom-nav,
   .settings-backdrop,
-  .sound-bar,
+  .transport-bar,
   .update-toast,
   .toast {
     display: none !important;

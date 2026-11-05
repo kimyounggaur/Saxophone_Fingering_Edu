@@ -277,6 +277,22 @@ function isEditableTarget(target: EventTarget | null): boolean {
   return target.matches("input, textarea, select, [contenteditable='true']") || Boolean(target.closest("[role='dialog']"));
 }
 
+/** Speaker glyph of the sound button: waves when the tone follows the fingering, a cross when it does not. */
+function SoundIcon({ on }: { on: boolean }) {
+  return (
+    <svg className="tb-icon tb-icon-svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+      <path d="M4 9.5v5h3.6l4.4 4v-13l-4.4 4H4z" fill="currentColor" />
+      <path
+        d={on ? "M15.6 8.6a4.6 4.6 0 0 1 0 6.8M18.2 6a8.4 8.4 0 0 1 0 12" : "M16 9.5l5 5m0-5l-5 5"}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export function SaxHandsApp() {
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [settingsReady, setSettingsReady] = useState(false);
@@ -546,7 +562,7 @@ export function SaxHandsApp() {
     [capabilityProfile, practiceAudioProtected, scheduleAutoTone, settings.accidental, settings.autoTone, settings.highFSharpKey, settings.haptics, settings.volume, toneNote],
   );
 
-  /** Switches the tone that follows the fingering on or off (the button next to the transport and the setting). */
+  /** Switches the tone that follows the fingering on or off (the sound button in the playback row and the setting). */
   const changeAutoTone = useCallback(
     (enabled: boolean) => {
       setSettings((current) => ({ ...current, autoTone: enabled }));
@@ -905,37 +921,6 @@ export function SaxHandsApp() {
                   {answerVisibility !== "recall-hidden" && <span className="stage-caption">{settings.view === "player" ? "연주자 시점" : "거울 시점"} · {settings.reducedMotion ? "정적 전환" : settings.animationSpeed === "slow" ? "느리게" : "보통"}</span>}
                 </div>
 
-                <div className="transport" aria-label="운지 재생 조작">
-                  <button type="button" disabled={practiceAudioProtected} onClick={() => moveNote(-1, "previous")} aria-label="이전 반음">← 이전</button>
-                  <button type="button" onClick={() => setReplayToken((token) => token + 1)}>↻ 다시</button>
-                  <button
-                    type="button"
-                    disabled={practiceAudioProtected}
-                    onClick={() => void playTone(currentNote.writtenMidi)}
-                    aria-label="고품질 색소폰 모델링 합성음 듣기"
-                    title={practiceAudioProtected ? "정답을 확인한 뒤 들을 수 있습니다." : `${instrument.koreanName} 모델링 음색`}
-                  >
-                    ♪ 음색 듣기
-                  </button>
-                  <button type="button" disabled={practiceAudioProtected} aria-pressed={autoplay} onClick={() => setAutoplay((value) => !value)}>{autoplay ? "■ 정지" : "▶ 재생"}</button>
-                </div>
-                <div className="sound-bar">
-                  <button
-                    className="secondary-button"
-                    type="button"
-                    aria-pressed={settings.autoTone}
-                    onClick={() => changeAutoTone(!settings.autoTone)}
-                    title={settings.autoTone
-                      ? practiceAudioProtected
-                        ? "문제를 푸는 동안은 정답이 드러나지 않도록 소리를 내지 않습니다. 정답을 확인하면 소리가 납니다."
-                        : `운지가 바뀔 때마다 ${instrument.koreanName} 소리가 납니다. 누르면 끕니다.`
-                      : "누르면 운지가 바뀔 때마다 색소폰 소리가 납니다."}
-                  >
-                    {settings.autoTone
-                      ? practiceAudioProtected ? "소리 켜짐 · 정답 확인 후 재생" : `소리 켜짐 · ${instrument.koreanName}`
-                      : "소리 꺼짐"}
-                  </button>
-                </div>
               </article>
 
               <div className="right-column">
@@ -949,6 +934,48 @@ export function SaxHandsApp() {
                     <button key={id} className="nav-button" type="button" data-index={`0${index + 1}`} aria-current={mode === id ? "page" : undefined} onClick={() => openMode(id)}>{label}</button>
                   ))}
                 </nav>
+
+                <div className="transport-bar" role="group" aria-label="운지 재생 조작">
+                  <button type="button" disabled={practiceAudioProtected} onClick={() => moveNote(-1, "previous")} aria-label="이전 반음">
+                    <span className="tb-icon" aria-hidden="true">←</span>
+                    <span className="tb-label">이전</span>
+                  </button>
+                  <button type="button" onClick={() => setReplayToken((token) => token + 1)}>
+                    <span className="tb-icon" aria-hidden="true">↻</span>
+                    <span className="tb-label">다시</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={practiceAudioProtected}
+                    onClick={() => void playTone(currentNote.writtenMidi)}
+                    aria-label="음색 듣기, 고품질 색소폰 모델링 합성음"
+                    title={practiceAudioProtected ? "정답을 확인한 뒤 들을 수 있습니다." : `${instrument.koreanName} 모델링 음색`}
+                  >
+                    <span className="tb-icon" aria-hidden="true">♪</span>
+                    <span className="tb-label">음색 듣기</span>
+                  </button>
+                  <button type="button" disabled={practiceAudioProtected} aria-pressed={autoplay} onClick={() => setAutoplay((value) => !value)}>
+                    <span className="tb-icon" aria-hidden="true">{autoplay ? "■" : "▶"}</span>
+                    <span className="tb-label">{autoplay ? "정지" : "재생"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={settings.autoTone}
+                    aria-describedby={settings.autoTone && practiceAudioProtected ? "transport-hint" : undefined}
+                    onClick={() => changeAutoTone(!settings.autoTone)}
+                    title={settings.autoTone
+                      ? practiceAudioProtected
+                        ? "문제를 푸는 동안은 정답이 드러나지 않도록 소리를 내지 않습니다. 정답을 확인하면 소리가 납니다."
+                        : `운지가 바뀔 때마다 ${instrument.koreanName} 소리가 납니다. 누르면 끕니다.`
+                      : "누르면 운지가 바뀔 때마다 색소폰 소리가 납니다."}
+                  >
+                    <SoundIcon on={settings.autoTone} />
+                    <span className="tb-label">{settings.autoTone ? "소리 켜짐" : "소리 꺼짐"}</span>
+                  </button>
+                  {settings.autoTone && practiceAudioProtected && (
+                    <p id="transport-hint" className="transport-hint">정답을 확인하면 소리가 납니다.</p>
+                  )}
+                </div>
 
                 <section className="card mode-card" aria-live="off">
                   {mode === "explore" && (
