@@ -792,6 +792,7 @@ export function SaxHandsApp() {
                       reducedMotion={settings.reducedMotion}
                       answerVisibility={answerVisibility}
                       replayToken={replayToken}
+                      animationSpeed={settings.animationSpeed}
                     />
                   )}
                   {answerVisibility !== "recall-hidden" && <span className="stage-caption">{settings.view === "player" ? "연주자 시점" : "거울 시점"} · {settings.reducedMotion ? "정적 전환" : settings.animationSpeed === "slow" ? "느리게" : "보통"}</span>}

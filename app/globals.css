@@ -673,6 +673,292 @@ button:disabled {
   backdrop-filter: blur(8px);
 }
 
+/* ───────────── Illustrated stage: commissioned line art ─────────────
+   Everything is drawn from existing tokens, so light, dark and system themes work
+   without extra rules.  The figure sits on a "sheet" in --paper-raised; the artwork's
+   white fills become a brass wash (instrument) or a skin tint (hands). */
+.sax-stage--illustrated {
+  --sx-sheet: var(--paper-raised);
+  --sx-ink: var(--ink);
+  --sx-base: var(--brass-wash);
+  --sx-hand: var(--skin-light);
+  --sx-accent: var(--brass);
+  --sx-accent-strong: var(--brass-strong);
+
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  align-items: center;
+  height: min(52vh, 440px);
+  min-height: 320px;
+  background: var(--sx-sheet);
+}
+
+/* control row above the drawing instead of floating chips over it */
+.sax-stage--illustrated .sax-stage__view-label {
+  position: static;
+  margin: 0.5rem 0 0.1rem 0.6rem;
+}
+
+.sax-stage--illustrated .sax-stage__svg {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  height: 100%;
+  min-height: 0;
+}
+
+.sax-stage--illustrated {
+  --sx-base-mix: 42%;
+  --sx-hand-mix: 62%;
+}
+
+[data-theme="dark"] .sax-stage--illustrated {
+  --sx-base-mix: 78%;
+  --sx-hand-mix: 58%;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="system"] .sax-stage--illustrated {
+    --sx-base-mix: 78%;
+    --sx-hand-mix: 58%;
+  }
+}
+
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .sax-stage--illustrated {
+    --sx-base: color-mix(in srgb, var(--brass-wash) var(--sx-base-mix), var(--paper-raised));
+    --sx-hand: color-mix(in srgb, var(--skin-light) var(--sx-hand-mix), var(--paper-raised));
+  }
+}
+
+.sx-sheet {
+  fill: var(--sx-sheet);
+}
+
+.sx-art path {
+  stroke: var(--sx-ink);
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  stroke-miterlimit: 10;
+}
+
+.sx-art .sx-l {
+  fill: none;
+}
+
+.sx-art .sx-b {
+  fill: var(--sx-base);
+}
+
+.sx-art .sx-h {
+  fill: var(--sx-hand);
+}
+
+.sx-art .sx-r {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The PDF line weights are print hairlines; screens need them heavier to stay legible. */
+.sx-art .sx-w15 { stroke-width: 0.32; }
+.sx-art .sx-w22 { stroke-width: 0.42; }
+.sx-art .sx-w30 { stroke-width: 0.52; }
+.sx-art .sx-w45 { stroke-width: 0.68; }
+.sx-art .sx-w60 { stroke-width: 0.84; }
+
+.sx-art .sx-hl {
+  fill: var(--sx-accent);
+  fill-opacity: 0.62;
+  stroke: var(--sx-accent-strong);
+  stroke-linejoin: round;
+  stroke-width: 0.5;
+}
+
+.sx-art .sx-hl--estimate {
+  fill-opacity: 0.28;
+  stroke-dasharray: 1.6 1.2;
+}
+
+.sx-ring,
+.sx-pulse,
+.sx-release {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.sx-ring {
+  stroke: var(--sx-accent-strong);
+  stroke-width: 1.3px;
+}
+
+.sx-ring--estimate {
+  stroke-dasharray: 3 2.4;
+}
+
+.sx-pulse {
+  stroke: var(--sx-accent);
+  stroke-width: 1.8px;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sx-pulse 900ms ease-out 2 both;
+}
+
+.sx-release {
+  stroke: var(--ink-subtle);
+  stroke-dasharray: 3 3;
+  stroke-width: 1.1px;
+  animation: sx-release 800ms ease-out both;
+}
+
+.sx-pose--in {
+  animation: sx-pose-in var(--sx-fade, 430ms) ease-out both;
+}
+
+.sx-pose--out {
+  pointer-events: none;
+  animation: sx-pose-out var(--sx-fade, 430ms) ease-in both;
+}
+
+.sx-chip__box {
+  fill: var(--paper-glass);
+  stroke: var(--sx-accent-strong);
+  stroke-width: 0.9px;
+  vector-effect: non-scaling-stroke;
+}
+
+.sx-chip__text {
+  fill: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.sx-arrow-label {
+  fill: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 800;
+  paint-order: stroke;
+  pointer-events: none;
+  stroke: var(--sx-sheet);
+  stroke-linejoin: round;
+  stroke-width: 0.7;
+}
+
+.sx-chip__leader {
+  stroke: var(--sx-accent-strong);
+  stroke-width: 1px;
+  opacity: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.sx-chip--estimate .sx-chip__box,
+.sx-chip--estimate .sx-chip__leader {
+  stroke-dasharray: 3 2;
+}
+
+.sax-stage__zoom {
+  z-index: 2;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  margin: 0.4rem 0.5rem 0.1rem 0;
+  display: flex;
+  gap: 0.15rem;
+  padding: 0.15rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-glass);
+  backdrop-filter: blur(8px);
+}
+
+.sax-stage__zoom button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.sax-stage__zoom button[aria-pressed="true"] {
+  background: var(--brass-wash);
+  box-shadow: inset 0 0 0 1px var(--brass);
+  color: var(--brass-strong);
+}
+
+.sax-stage__zoom button:focus-visible {
+  outline-offset: -3px;
+}
+
+.sax-stage__warning-text {
+  position: absolute;
+  z-index: 2;
+  bottom: 0.55rem;
+  left: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: calc(100% - 8.5rem);
+  min-height: 28px;
+  margin: 0;
+  padding: 0.25rem 0.65rem 0.25rem 0.35rem;
+  border: 1px solid var(--critical);
+  border-radius: 0.9rem;
+  background: var(--critical-wash);
+  color: var(--critical);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.sax-stage__warning-text span {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  background: var(--critical);
+  color: var(--critical-wash);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+.sax-stage--reduced-motion .sx-pose--in,
+.sax-stage--reduced-motion .sx-pose--out,
+.sax-stage--reduced-motion .sx-pulse,
+.sax-stage--reduced-motion .sx-release {
+  animation: none;
+}
+
+.sax-stage--reduced-motion .sx-pulse,
+.sax-stage--reduced-motion .sx-release {
+  display: none;
+}
+
+@keyframes sx-pose-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sx-pose-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes sx-pulse {
+  from { opacity: 0.95; transform: scale(0.7); }
+  to { opacity: 0; transform: scale(2.1); }
+}
+
+@keyframes sx-release {
+  from { opacity: 0.9; }
+  to { opacity: 0; }
+}
+
 .transport {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

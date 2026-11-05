@@ -19,6 +19,9 @@
 | A | 33개 primary 운지와 authority source | generator `50ffcc418d9a9923a027187df36495e9c6931607e5f3ed57e3d5ea3c9d3ecbd4` | 대기 |
 | B | 손 리그·접촉·시각 자연스러움 7장면×light/dark | `lib/sax-rig.ts` `df2ee4e2848b816b18317f7e4a2cfa93b0f9582905b8ff5e80fbe8fe2ae3561c` | 대기 |
 | C | 6개 레슨 순서·문구·diff | `lib/learning.ts` `64c839d95711aced59d87426788a54d3e761a10abd542e686de03486e9a90177` | 대기 |
+| D | 위촉 일러스트 무대: 손 포즈 33음 시각 자연스러움 light/dark·연주자/거울, seed 불일치 7음 결정, 추정 키 2개, 이용 허락 범위 | `lib/generated/illustration-data.ts` `b55139a9adf7468a1e3d3eab15a5e81cbb55cfb5f397e48e18bdac0ffe0c78e8` · `lib/illustration.ts` `0e4e94c8d5120fb602dd3ca3efc1c1e0c0c7e2ab33d1a0dd43660161ae2d4aa4` · `app/components/SaxophoneStage.tsx` `b83e1ef2ab931ca273296d20eb57acc3a2a938f215fae2aebe1614ee428536c9` | 대기 |
+
+Gate D 메모: 일러스트 무대는 seed 운지를 기준으로 키를 강조하며, 작가의 마커와 seed가 다른 7개 음은 [data-review.md](data-review.md)에 기록하고 화면에서 경고합니다. `lib/sax-rig.ts`는 변경하지 않았고 일러스트가 다루지 못하는 음·키 조합의 대체 무대로만 남으므로 Gate B의 적용 범위는 담당자가 다시 정해야 합니다.
 
 ## 실제 기기·보조기술 대기
 
