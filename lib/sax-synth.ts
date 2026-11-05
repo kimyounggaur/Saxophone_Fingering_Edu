@@ -62,7 +62,7 @@ export interface SaxSynthEngineOptions {
    * true), so that a repeated tap never waits.  Offline rendering plays one note and turns it off.
    */
   readonly prefetch?: boolean;
-  /** Longest model note in seconds (default 3.2, at most 8, the renderer's limit).  MP3 export raises it. */
+  /** Longest model note in seconds (default 3.2, at most 8, the renderer's limit).  Offline rendering of long notes raises it. */
   readonly maxNoteSeconds?: number;
 }
 
@@ -470,8 +470,8 @@ export class SaxSynthEngine {
   /**
    * Starts a note.  Returns the engine that actually sounded: `"model"` (SaxTone 3.0), `"classic"`
    * (SaxTone 2.0, also the fallback when a model note could not be rendered) or `null` when the
-   * engine is disposed or its context is closed.  Callers that must not fall back (MP3 export)
-   * check the result.
+   * engine is disposed or its context is closed.  Callers that must not fall back (offline
+   * rendering) check the result.
    */
   play(options: SaxSynthPlayOptions): SaxSynthMode | null {
     if (this.disposed || this.context.state === "closed") return null;
@@ -806,8 +806,27 @@ export class SaxSynthEngine {
   }
 }
 
+/**
+ * Safari on iPhone and iPad keeps Web Audio silent while the ringer switch is on "silent" unless the page
+ * says that it plays media.  Without it the tone that follows the fingering would be missing for exactly
+ * the learners who keep their phone on silent.  Browsers without `navigator.audioSession` ignore this.
+ * Returns whether the session type was set.
+ */
+export function preferPlaybackAudioSession(): boolean {
+  try {
+    const session = typeof navigator === "undefined" ? undefined : (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+    if (!session) return false;
+    if (session.type !== "playback") session.type = "playback";
+    return session.type === "playback";
+  } catch {
+    // Best effort: the tone still plays, only the silent switch keeps its say.
+    return false;
+  }
+}
+
 export function createSaxSynthEngine(options: SaxSynthEngineOptions = {}): SaxSynthEngine | null {
   if (typeof window === "undefined") return null;
+  preferPlaybackAudioSession();
   const browserWindow = window as typeof window & { webkitAudioContext?: typeof AudioContext };
   const AudioConstructor = browserWindow.AudioContext ?? browserWindow.webkitAudioContext;
   if (!AudioConstructor) return null;

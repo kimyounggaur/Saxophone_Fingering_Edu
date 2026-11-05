@@ -6,6 +6,7 @@ import {
   SAX_SYNTH_VERSION,
   SaxSynthEngine,
   createSaxSynthEngine,
+  preferPlaybackAudioSession,
   saxSynthVersionLabel,
   warmUpSaxModel,
 } from "../lib/sax-synth.ts";
@@ -483,4 +484,46 @@ test("an offline context has no close(); disposing still works", async () => {
   engine.play(NOTE);
   await assert.doesNotReject(engine.dispose());
   assert.equal(context.closeCalls, 0);
+});
+
+// `navigator` is a read-only global in recent Node versions: swap it with defineProperty and put it back.
+function withNavigator(value, run) {
+  const original = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  Object.defineProperty(globalThis, "navigator", { value, configurable: true, writable: true });
+  try {
+    return run();
+  } finally {
+    if (original) Object.defineProperty(globalThis, "navigator", original);
+    else delete globalThis.navigator;
+  }
+}
+
+test("tells Safari that the page plays media, so that the silent switch does not mute the tone", () => {
+  const session = { type: "auto" };
+  withNavigator({ audioSession: session }, () => {
+    assert.equal(preferPlaybackAudioSession(), true);
+  });
+  assert.equal(session.type, "playback");
+  // already set: nothing to do, still reported as set
+  withNavigator({ audioSession: session }, () => {
+    assert.equal(preferPlaybackAudioSession(), true);
+  });
+  assert.equal(session.type, "playback");
+});
+
+test("browsers without an audio session API, or one that refuses, are left alone", () => {
+  withNavigator({}, () => assert.equal(preferPlaybackAudioSession(), false));
+  withNavigator(undefined, () => assert.equal(preferPlaybackAudioSession(), false));
+  const refusing = {
+    get type() {
+      return "auto";
+    },
+    set type(_value) {
+      throw new TypeError("not allowed");
+    },
+  };
+  withNavigator({ audioSession: refusing }, () => assert.equal(preferPlaybackAudioSession(), false));
+  // a session that silently keeps its type is not reported as set either
+  const stubborn = { get type() { return "ambient"; }, set type(_value) {} };
+  withNavigator({ audioSession: stubborn }, () => assert.equal(preferPlaybackAudioSession(), false));
 });

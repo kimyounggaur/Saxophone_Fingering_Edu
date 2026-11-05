@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { SaxophoneStage, type AnswerVisibility, type SaxophoneStageView } from "./components/SaxophoneStage";
 import { StaffNote } from "./components/StaffNote";
-import { Mp3ExportSheet } from "./components/Mp3ExportSheet";
 import {
   SAX_INSTRUMENTS,
   SAX_KEYS,
@@ -30,8 +29,7 @@ import {
   type SaxSynthEngine,
   type SaxSynthMode,
 } from "@/lib/sax-synth";
-import { warmMp3Encoder } from "@/lib/mp3-encode";
-import type { SaxExportLabels } from "@/lib/sax-export";
+import { DEFAULT_TONE_VOLUME, SETTINGS_REVISION, upgradeSavedSettings } from "@/lib/settings-revision";
 
 type AppMode = "explore" | "learn" | "practice" | "chart";
 type ThemeChoice = "system" | "light" | "dark";
@@ -54,6 +52,12 @@ interface AppSettings {
   referenceBasis: ReferenceBasis;
   volume: number;
   animationSpeed: "normal" | "slow";
+  /**
+   * Which generation of defaults these settings were saved with.  A default that changes must also
+   * reach browsers that already saved their settings; the loader upgrades older saves once (see
+   * `SETTINGS_REVISION`), after which the learner's own choices stay untouched.
+   */
+  settingsRevision: number;
 }
 
 interface PracticeProgress {
@@ -92,11 +96,12 @@ const DEFAULT_SETTINGS: AppSettings = {
   highFSharpKey: "unknown",
   reducedMotion: false,
   haptics: false,
-  autoTone: false,
+  autoTone: true,
   toneEngine: "model",
   referenceBasis: "concert",
-  volume: 0.18,
+  volume: DEFAULT_TONE_VOLUME,
   animationSpeed: "normal",
+  settingsRevision: SETTINGS_REVISION,
 };
 
 const EMPTY_PROGRESS: ProgressState = {
@@ -283,7 +288,6 @@ export function SaxHandsApp() {
   const [replayToken, setReplayToken] = useState(0);
   const [autoplay, setAutoplay] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [mp3Open, setMp3Open] = useState(false);
   const [announcement, setAnnouncement] = useState("G4 운지를 표시했습니다.");
   const [toast, setToast] = useState("");
   const [online, setOnline] = useState(true);
@@ -302,7 +306,6 @@ export function SaxHandsApp() {
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const settingsPanelRef = useRef<HTMLElement>(null);
   const settingsCloseRef = useRef<HTMLButtonElement>(null);
-  const mp3ButtonRef = useRef<HTMLButtonElement>(null);
   const currentPressedRef = useRef<readonly string[]>(pressedKeys(SAX_NOTES.find((note) => note.writtenMidi === 67) ?? SAX_NOTES[0]));
   const synthRef = useRef<SaxSynthEngine | null>(null);
   const toneEngineRef = useRef<SaxSynthMode>(DEFAULT_SETTINGS.toneEngine);
@@ -338,7 +341,8 @@ export function SaxHandsApp() {
       try {
         const savedSettings = window.localStorage.getItem(SETTINGS_KEY);
         if (savedSettings) {
-          const parsed = JSON.parse(savedSettings) as Partial<AppSettings>;
+          // Saves from older releases get the newer defaults once (the tone that follows the fingering).
+          const parsed = upgradeSavedSettings(JSON.parse(savedSettings) as Partial<AppSettings>);
           const instrument = parsed.instrument && parsed.instrument in SAX_INSTRUMENTS
             ? parsed.instrument
             : DEFAULT_SETTINGS.instrument;
@@ -346,7 +350,8 @@ export function SaxHandsApp() {
             ? Math.min(1, Math.max(0, parsed.volume))
             : DEFAULT_SETTINGS.volume;
           const toneEngine: SaxSynthMode = parsed.toneEngine === "classic" ? "classic" : "model";
-          setSettings({ ...DEFAULT_SETTINGS, ...parsed, instrument, volume, toneEngine });
+          const autoTone = typeof parsed.autoTone === "boolean" ? parsed.autoTone : DEFAULT_SETTINGS.autoTone;
+          setSettings({ ...DEFAULT_SETTINGS, ...parsed, instrument, volume, toneEngine, autoTone });
         }
         else if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
           setSettings((current) => ({ ...current, reducedMotion: true }));
@@ -479,6 +484,33 @@ export function SaxHandsApp() {
     [getOrCreateSynth, settings.toneEngine, settings.volume, toneNote],
   );
 
+  /**
+   * Lets the tone of a note start with the hand movement: the note is prepared while the hand moves and
+   * sounds when the hand arrives.  Every change of fingering uses it, and so does the answer of a
+   * practice question once it is shown.
+   */
+  const scheduleAutoTone = useCallback(
+    (midi: number) => {
+      if (autoToneTimerRef.current !== null) {
+        window.clearTimeout(autoToneTimerRef.current);
+        autoToneTimerRef.current = null;
+      }
+      const synth = getOrCreateSynth();
+      if (synth) {
+        synth.setMode(settings.toneEngine);
+        synth.setVolume(settings.volume);
+        void synth.ensureRunning();
+        // SaxTone 3.0 computes the note in small slices while the hand moves, so the tone starts on time.
+        if (settings.volume > 0) void synth.prepare(toneNote(midi));
+      }
+      autoToneTimerRef.current = window.setTimeout(() => {
+        autoToneTimerRef.current = null;
+        void playTone(midi);
+      }, settings.reducedMotion ? 0 : settings.animationSpeed === "slow" ? 620 : 430);
+    },
+    [getOrCreateSynth, playTone, settings.animationSpeed, settings.reducedMotion, settings.toneEngine, settings.volume, toneNote],
+  );
+
   const selectNote = useCallback(
     (midi: number, source: SelectionSource) => {
       const note = getNoteByWrittenMidi(midi);
@@ -502,26 +534,40 @@ export function SaxHandsApp() {
         window.clearTimeout(autoToneTimerRef.current);
         autoToneTimerRef.current = null;
       }
+      // A practice question does not give its answer away: the tone follows once the answer is shown.
       if (settings.autoTone && source !== "practice" && !practiceAudioProtected) {
-        const synth = getOrCreateSynth();
-        if (synth) {
-          synth.setMode(settings.toneEngine);
-          synth.setVolume(settings.volume);
-          void synth.ensureRunning();
-          // SaxTone 3.0 computes the note in small slices while the hand moves, so the tone starts on time.
-          if (settings.volume > 0) void synth.prepare(toneNote(midi));
-        }
-        autoToneTimerRef.current = window.setTimeout(() => {
-          autoToneTimerRef.current = null;
-          void playTone(midi);
-        }, settings.reducedMotion ? 0 : settings.animationSpeed === "slow" ? 620 : 430);
+        scheduleAutoTone(midi);
       } else if (synthRef.current && settings.volume > 0 && source !== "practice" && !practiceAudioProtected) {
         // The learner has used sound before: have the note ready for the listen button as well.
         void synthRef.current.prepare(toneNote(midi));
       }
       return true;
     },
-    [capabilityProfile, getOrCreateSynth, playTone, practiceAudioProtected, settings.accidental, settings.animationSpeed, settings.autoTone, settings.highFSharpKey, settings.haptics, settings.reducedMotion, settings.toneEngine, settings.volume, toneNote],
+    [capabilityProfile, practiceAudioProtected, scheduleAutoTone, settings.accidental, settings.autoTone, settings.highFSharpKey, settings.haptics, settings.volume, toneNote],
+  );
+
+  /** Switches the tone that follows the fingering on or off (the button next to the transport and the setting). */
+  const changeAutoTone = useCallback(
+    (enabled: boolean) => {
+      setSettings((current) => ({ ...current, autoTone: enabled }));
+      if (!enabled) {
+        stopVoices();
+        setAnnouncement("운지가 바뀔 때 나던 소리를 껐습니다.");
+        return;
+      }
+      setAnnouncement(`운지가 바뀔 때마다 ${instrument.koreanName} 소리가 납니다.`);
+      // Switching the sound on is a tap: it wakes the audio, and the current note is heard once.
+      if (practiceAudioProtected) {
+        const synth = getOrCreateSynth();
+        if (synth) {
+          synth.setVolume(settings.volume);
+          void synth.ensureRunning();
+        }
+      } else {
+        void playTone(selectedMidi);
+      }
+    },
+    [getOrCreateSynth, instrument.koreanName, playTone, practiceAudioProtected, selectedMidi, settings.volume, stopVoices],
   );
 
   const moveNote = useCallback(
@@ -574,11 +620,26 @@ export function SaxHandsApp() {
   }, [settings.toneEngine]);
 
   useEffect(() => {
-    // Same first touch: fetch the MP3 encoder quietly so the service worker can cache it for offline use.
-    const warm = () => void warmMp3Encoder();
-    document.addEventListener("pointerdown", warm, { once: true, passive: true });
-    return () => document.removeEventListener("pointerdown", warm);
-  }, []);
+    // Browsers start audio only after a tap or key press, and Safari only when `resume()` runs inside that
+    // gesture.  The tone follows the fingering, also while the automatic playback moves on by itself, so
+    // the first gesture on the page wakes the audio up; later notes then need no further permission.
+    if (!settings.autoTone) return;
+    const gestures = ["pointerup", "touchend", "click", "keydown"] as const;
+    const stopListening = () => gestures.forEach((name) => document.removeEventListener(name, wake, true));
+    function wake() {
+      const synth = getOrCreateSynth();
+      if (!synth) {
+        stopListening();
+        return;
+      }
+      synth.setVolume(settings.volume);
+      void synth.ensureRunning().then((running) => {
+        if (running) stopListening();
+      });
+    }
+    gestures.forEach((name) => document.addEventListener(name, wake, { capture: true, passive: true }));
+    return stopListening;
+  }, [getOrCreateSynth, settings.autoTone, settings.volume]);
 
   useEffect(() => () => {
     if (autoToneTimerRef.current !== null) window.clearTimeout(autoToneTimerRef.current);
@@ -589,7 +650,7 @@ export function SaxHandsApp() {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.altKey || event.metaKey || isEditableTarget(event.target) || settingsOpen || mp3Open) return;
+      if (event.ctrlKey || event.altKey || event.metaKey || isEditableTarget(event.target) || settingsOpen) return;
       if (event.code === "ArrowLeft") {
         event.preventDefault();
         moveNote(-1, "previous");
@@ -622,47 +683,22 @@ export function SaxHandsApp() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [moveNote, mp3Open, selectNote, selectedOctave, settingsOpen]);
+  }, [moveNote, selectNote, selectedOctave, settingsOpen]);
 
   useEffect(() => {
     const content = appContentRef.current;
-    if (settingsOpen || mp3Open) {
+    if (settingsOpen) {
       content?.setAttribute("inert", "");
-      if (settingsOpen) settingsCloseRef.current?.focus();
+      settingsCloseRef.current?.focus();
     } else {
       content?.removeAttribute("inert");
     }
-  }, [mp3Open, settingsOpen]);
+  }, [settingsOpen]);
 
   const closeSettings = useCallback(() => {
     setSettingsOpen(false);
     window.setTimeout(() => settingsButtonRef.current?.focus(), 0);
   }, []);
-
-  const openMp3 = useCallback(() => {
-    // The live tone and the exported preview must never sound at the same time.
-    setAutoplay(false);
-    stopVoices();
-    setMp3Open(true);
-  }, [stopVoices]);
-
-  const closeMp3 = useCallback(() => {
-    setMp3Open(false);
-    window.setTimeout(() => mp3ButtonRef.current?.focus(), 0);
-  }, []);
-
-  // What the MP3 sheet exports: the tone of the current note, with the names the sheet and the file show.
-  const exportTone = mp3Open ? toneNote(currentNote.writtenMidi) : null;
-  const exportPitchNames = exportTone ? writtenMidiToNames(exportTone.midi, settings.accidental) : null;
-  const exportLabels: SaxExportLabels | null = exportPitchNames
-    ? {
-        instrumentKo: instrument.koreanName,
-        fingeringDisplay: writtenNames.display,
-        fingeringAscii: writtenNames.ascii,
-        pitchDisplay: exportPitchNames.display,
-        pitchAscii: exportPitchNames.ascii,
-      }
-    : null;
 
   const onSettingsKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (event.key === "Escape") {
@@ -730,6 +766,7 @@ export function SaxHandsApp() {
   const revealPractice = () => {
     setPracticeRevealed(true);
     setAnnouncement(`${writtenMidiToNames(practiceAnswerMidi, settings.accidental).display} 정답 운지를 공개했습니다.`);
+    if (settings.autoTone) scheduleAutoTone(practiceAnswerMidi);
   };
 
   const chooseRecognition = (midi: number) => {
@@ -738,6 +775,7 @@ export function SaxHandsApp() {
     const correct = midi === practiceAnswerMidi;
     setAnnouncement(correct ? "정답입니다. 손가락 변화를 확인하세요." : `다시 확인해 볼 음은 ${writtenMidiToNames(practiceAnswerMidi, settings.accidental).display}입니다.`);
     if (settings.haptics) navigator.vibrate?.(HAPTIC_MS);
+    if (settings.autoTone) scheduleAutoTone(practiceAnswerMidi);
   };
 
   const gradePractice = (grade: Grade) => {
@@ -881,17 +919,21 @@ export function SaxHandsApp() {
                   </button>
                   <button type="button" disabled={practiceAudioProtected} aria-pressed={autoplay} onClick={() => setAutoplay((value) => !value)}>{autoplay ? "■ 정지" : "▶ 재생"}</button>
                 </div>
-                <div className="export-bar">
+                <div className="sound-bar">
                   <button
-                    ref={mp3ButtonRef}
                     className="secondary-button"
                     type="button"
-                    disabled={practiceAudioProtected}
-                    aria-haspopup="dialog"
-                    onClick={openMp3}
-                    title={practiceAudioProtected ? "정답을 확인한 뒤 저장할 수 있습니다." : `${SAX_SYNTH_VERSION} 합성음을 MP3 파일로 저장`}
+                    aria-pressed={settings.autoTone}
+                    onClick={() => changeAutoTone(!settings.autoTone)}
+                    title={settings.autoTone
+                      ? practiceAudioProtected
+                        ? "문제를 푸는 동안은 정답이 드러나지 않도록 소리를 내지 않습니다. 정답을 확인하면 소리가 납니다."
+                        : `운지가 바뀔 때마다 ${instrument.koreanName} 소리가 납니다. 누르면 끕니다.`
+                      : "누르면 운지가 바뀔 때마다 색소폰 소리가 납니다."}
                   >
-                    ⬇ MP3로 저장
+                    {settings.autoTone
+                      ? practiceAudioProtected ? "소리 켜짐 · 정답 확인 후 재생" : `소리 켜짐 · ${instrument.koreanName}`
+                      : "소리 꺼짐"}
                   </button>
                 </div>
               </article>
@@ -1086,19 +1128,7 @@ export function SaxHandsApp() {
                   const toneEngine: SaxSynthMode = event.target.value === "classic" ? "classic" : "model";
                   setSettings((current) => ({ ...current, toneEngine }));
                 }}><option value="model">{saxSynthVersionLabel("model")} · 녹음 분석 모델</option><option value="classic">{saxSynthVersionLabel("classic")} · 이전 방식</option></select></div>
-                <div className="setting-row"><span className="setting-label">선택 시 색소폰 음색<small>{saxSynthVersionLabel(settings.toneEngine)} · 실제 연주 녹음이 아닌 악기별 모델링 합성음입니다.</small></span><label className="switch"><input type="checkbox" aria-label="선택 시 색소폰 모델링 음색 자동 재생" checked={settings.autoTone} onChange={(event) => {
-                  const checked = event.target.checked;
-                  setSettings((current) => ({ ...current, autoTone: checked }));
-                  if (checked) {
-                    const synth = getOrCreateSynth();
-                    if (synth) {
-                      synth.setVolume(settings.volume);
-                      void synth.ensureRunning();
-                    }
-                  } else {
-                    stopVoices();
-                  }
-                }} /><span /></label></div>
+                <div className="setting-row"><span className="setting-label">운지가 바뀔 때 소리<small>{saxSynthVersionLabel(settings.toneEngine)} · 고른 악기({instrument.koreanName})의 소리가 납니다. 실제 연주 녹음이 아닌 모델링 합성음입니다. 연습 문제는 정답을 확인한 뒤에 소리가 납니다.</small></span><label className="switch"><input type="checkbox" aria-label="운지가 바뀔 때 소리 재생" checked={settings.autoTone} onChange={(event) => changeAutoTone(event.target.checked)} /><span /></label></div>
                 <div className="setting-row"><label htmlFor="setting-tone-basis">기준음 기준</label><select id="setting-tone-basis" value={settings.referenceBasis} onChange={(event) => setSettings((current) => ({ ...current, referenceBasis: event.target.value as ReferenceBasis }))}><option value="concert">실제로 들리는 실음</option><option value="written">악보의 기보음</option></select></div>
                 <div className="setting-row"><label htmlFor="setting-volume">음색 음량<small>{Math.round(settings.volume * 100)}% · 0%에서는 완전히 음소거됩니다.</small></label><input id="setting-volume" type="range" min="0" max="1" step="0.01" value={settings.volume} aria-valuetext={`${Math.round(settings.volume * 100)}퍼센트`} onChange={(event) => setSettings((current) => ({ ...current, volume: Number(event.target.value) }))} /></div>
                 <div className="setting-row"><span className="setting-label">짧은 진동<small>지원 기기에서만 10ms 사용합니다.</small></span><label className="switch"><input type="checkbox" aria-label="짧은 진동 피드백" checked={settings.haptics} onChange={(event) => setSettings((current) => ({ ...current, haptics: event.target.checked }))} /><span /></label></div>
@@ -1125,16 +1155,6 @@ export function SaxHandsApp() {
               <p className="range-help">{online ? `온라인 · ${offlineReady ? "오프라인 사용 준비됨" : "오프라인 사용 준비 중"}` : "오프라인 · 저장된 기능을 사용 중"} · 설정과 진도는 이 기기에만 저장되며 서버로 전송하지 않습니다.</p>
             </section>
           </div>
-        )}
-
-        {mp3Open && exportTone && exportLabels && (
-          <Mp3ExportSheet
-            midi={exportTone.midi}
-            instrument={exportTone.instrument}
-            labels={exportLabels}
-            onClose={closeMp3}
-            onNotify={setToast}
-          />
         )}
 
         <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>

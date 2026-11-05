@@ -18,8 +18,8 @@
 - 일러스트가 다루지 못하는 음·키 조합은 기존 23키·10손가락 SVG 리그로 자동 대체, 중단 안전 애니메이션
 - 6개 변화 중심 레슨과 `콘텐츠 검수 중` 상태
 - 운지 회상·손 모양 인식·10문제 로컬 연습과 Leitner 진도 엔진
+- **운지가 바뀔 때마다 고른 악기(알토·테너·소프라노)의 소리가 기본으로 납니다**(화면의 `소리 켜짐/꺼짐` 버튼과 설정에서 끌 수 있고, 연습 문제는 정답을 확인한 뒤에 소리가 납니다)
 - SaxTone 3.0 합성음: 실제 알토 녹음을 측정해 맞춘 모델 렌더러(기본)와 이전 SaxTone 2.0 실시간 합성을 설정에서 전환, 음량·실음/기보음 선택, 터치 진동
-- **⬇ MP3로 저장**: 선택한 음의 SaxTone 3.0 합성음을 256kbps·44.1kHz·스테레오 MP3로 저장(길이 1.5·3·6초, 세기, 비브라토 선택, 앱 안 미리듣기). 기기 안에서만 처리하고 서버로 보내지 않으며, 연습 문제의 정답 공개 전에는 잠깁니다
 - 검색 가능한 운지표, 오선 음표, 인쇄 전용 33음 표
 - PWA manifest, 로컬 설정·진도, 오프라인 폴백, 라이트/다크 테마
 - 키보드·스크린리더·48px 터치 목표·safe-area 대응
@@ -36,7 +36,7 @@ npm exec tsc -- --noEmit
 npm test
 ```
 
-`npm test`는 배포 빌드, 서버 렌더링, 공유 메타데이터, 원본 지문·23키·33음·이조 불변식, 일러스트 데이터 무결성과 seed 대조, SaxTone 2.0·3.0 배음·엔벌로프·렌더러·캐시·폴백, MP3 인코더·태그·내보내기 파이프라인, 청음 랩의 분석·악구 코드, 설치·오프라인 자산을 검사합니다. 브랜드 PNG를 다시 만들 때는 `node scripts/generate-brand-assets.mjs`를 실행합니다.
+`npm test`는 배포 빌드, 서버 렌더링, 공유 메타데이터, 원본 지문·23키·33음·이조 불변식, 일러스트 데이터 무결성과 seed 대조, SaxTone 2.0·3.0 배음·엔벌로프·렌더러·캐시·폴백, 저장된 설정의 1회 이전, 청음 랩의 분석·악구 코드, 설치·오프라인 자산을 검사합니다. 브랜드 PNG를 다시 만들 때는 `node scripts/generate-brand-assets.mjs`를 실행합니다.
 
 ## 데이터 갱신 규칙
 
@@ -68,16 +68,13 @@ python3 scripts/extract-illustration-data.py --verify   # 생성 데이터를 �
 - `lib/sax-rig.ts`: 고정 길이 손 리그와 운지 프레임 (일러스트 미지원 조합의 대체 무대)
 - `lib/sax-model.ts`: SaxTone 3.0 오프라인 렌더러(배음 모델·리드 비선형·호흡/텅잉·미세 변동), 순수 JS·결정적
 - `lib/sax-synth.ts`: Web Audio 엔진 — 3.0 음 캐시·미리 계산·재생, 2.0 실시간 합성(`classic`)과 자동 폴백, 마스터 체인
-- `lib/sax-export.ts`: MP3 내보내기 — 같은 엔진을 오프라인 컨텍스트로 렌더링, 음량·피크 정책, 파일명·태그, 진행·취소
-- `lib/mp3-encode.ts`: lamejs 지연 로딩 래퍼, ID3v2.3(UTF-16) 태그, 프레임 검사, 청크 단위 인코딩(화면에 양보)
+- `lib/settings-revision.ts`: 저장된 설정의 세대(`settingsRevision`)와 오래된 저장본을 한 번만 올리는 규칙(기본값이 바뀌어도 이미 쓴 브라우저에 닿게)
 - `docs/audio-engine.md`: 두 엔진의 구조, 레퍼런스 보정 결과와 한계, 성능, 검증
-- `THIRD_PARTY_NOTICES.md`: LGPL 라이브러리(lamejs/LAME) 사용 고지
 - `scripts/audio-calibration/`: 3.0 상수를 실제 녹음에서 맞춘 분석 스크립트(앱·테스트와 무관, 음원은 포함하지 않음)
 - `scripts/audio-calibration/listening-lab/`: 2.0·3.0을 음량을 맞춰 번갈아 듣고 블라인드로 비교하는 청음 랩 페이지 생성기(앱에는 포함되지 않음)
 - `lib/learning.ts`: 레슨 diff, seeded 연습 큐, Leitner·migration
 - `app/components/`: 색소폰 스테이지(`SaxophoneStage.tsx` 일러스트, `SaxophoneRigStage.tsx` 대체 리그)와 오선 음표
 - `scripts/extract-illustration-data.py`: 일러스트 PDF → 데이터 추출·대조·픽셀 검증
-- `app/components/Mp3ExportSheet.tsx`: MP3 저장 대화창(옵션·진행률·미리듣기·저장, 접근성·초점 관리)
 - `app/SaxHandsApp.tsx`: 탐색·배우기·연습·운지표·설정 UI
 - `public/`: PWA, 오프라인, 아이콘, 공유 이미지
 
