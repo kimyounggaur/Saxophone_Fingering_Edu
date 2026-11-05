@@ -1960,8 +1960,13 @@ button:disabled {
 @media (forced-colors: active) {
   .pitch-pad[aria-pressed="true"],
   .nav-button[aria-current="page"],
-  .octave-control button[aria-pressed="true"] {
+  .octave-control button[aria-pressed="true"],
+  .export-sheet .segmented button[aria-pressed="true"] {
     border: 3px solid Highlight;
+  }
+
+  .export-progress > span {
+    background: Highlight;
   }
 
   .change-dot {
