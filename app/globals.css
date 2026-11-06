@@ -304,6 +304,69 @@ button:disabled {
   font-size: 1.12rem;
 }
 
+.theme-toggle {
+  display: flex;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.75rem;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle button {
+  display: grid;
+  width: 40px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink-muted);
+}
+
+.theme-toggle button + button {
+  border-left: 1px solid var(--line);
+}
+
+.theme-toggle button[aria-pressed="true"] {
+  background: var(--steel-wash, var(--paper-sunken));
+  color: var(--steel-strong, var(--ink));
+}
+
+@media (forced-colors: active) {
+  .theme-toggle button[aria-pressed="true"] {
+    outline: 3px solid Highlight;
+    outline-offset: -3px;
+  }
+}
+
+@media (max-width: 479px) {
+  .header-actions {
+    gap: 0.3rem;
+  }
+
+  .app-header {
+    gap: 0.5rem;
+  }
+
+  .compact-select {
+    max-width: 4.9rem;
+    padding: 0 1.6rem 0 0.5rem;
+  }
+
+  .icon-button {
+    width: 40px;
+    flex-basis: 40px;
+  }
+}
+
+@media (max-width: 359px) {
+  .brand-copy {
+    display: none;
+  }
+}
+
 .app-main {
   width: min(100%, 1180px);
   margin: 0 auto;

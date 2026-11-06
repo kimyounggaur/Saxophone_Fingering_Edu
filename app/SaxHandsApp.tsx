@@ -388,6 +388,16 @@ export function SaxHandsApp() {
     return () => window.clearTimeout(timer);
   }, []);
 
+  const [systemDark, setSystemDark] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-color-scheme: dark)");
+    const update = () => setSystemDark(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  const darkActive = settings.theme === "dark" || (settings.theme === "system" && systemDark);
+
   useEffect(() => {
     if (!settingsReady) return;
     window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
@@ -872,6 +882,14 @@ export function SaxHandsApp() {
                   <option key={id} value={id}>{SAX_INSTRUMENTS[id].koreanName.replace(" 색소폰", "")}</option>
                 ))}
               </select>
+              <div className="theme-toggle" role="group" aria-label="화면 모드">
+                <button type="button" aria-pressed={!darkActive} aria-label="라이트 모드" title="라이트 모드" onClick={() => setSettings((current) => ({ ...current, theme: "light" }))}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2" fill="currentColor" /><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                </button>
+                <button type="button" aria-pressed={darkActive} aria-label="다크 모드" title="다크 모드" onClick={() => setSettings((current) => ({ ...current, theme: "dark" }))}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z" fill="currentColor" /></svg>
+                </button>
+              </div>
               <button ref={settingsButtonRef} className="icon-button" type="button" aria-label="설정 열기" onClick={() => setSettingsOpen(true)}>⚙</button>
             </div>
           </header>
