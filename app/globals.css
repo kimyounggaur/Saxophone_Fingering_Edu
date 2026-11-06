@@ -361,7 +361,7 @@ button:disabled {
   }
 }
 
-@media (max-width: 359px) {
+@media (max-width: 379px) {
   .brand-copy {
     display: none;
   }
@@ -1785,7 +1785,8 @@ button:disabled {
 @media (min-width: 768px) {
   .app-header {
     min-height: 74px;
-    padding-inline: max(1.25rem, calc((100vw - 1180px) / 2));
+    /* line up with the cards below: .app-main is 1180px wide with 1rem side padding */
+    padding-inline: max(1.25rem, calc((100vw - 1180px) / 2 + 1rem));
   }
 
   .app-main {
